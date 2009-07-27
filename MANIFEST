@@ -1,0 +1,24 @@
+Build.PL
+Makefile.PL
+Changes
+MANIFEST
+MANIFEST.SKIP
+META.yml # Will be created by "make dist"
+README
+TODO
+lib/FvwmTiler/Tiler.pm
+lib/FvwmTiler/Group.pm
+lib/FvwmTiler/GroupWindow.pm
+lib/FvwmTiler/Layouts.pm
+lib/FvwmTiler/Layouts/Columns.pm
+lib/FvwmTiler/Layouts/Grid.pm
+lib/FvwmTiler/Layouts/Rows.pm
+lib/FvwmTiler/Layouts/Tall.pm
+lib/FvwmTiler/Layouts/Wide.pm
+lib/FvwmTiler/Page.pm
+scripts/FvwmTiler
+t/00_dist.t
+t/01_load.t
+t/pod-coverage.t
+t/pod.t
+
