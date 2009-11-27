@@ -603,12 +603,18 @@ sub apply_tiling {
     }
 
     #
-    # "None" will clear any existing layouts.
+    # "None" will clear layouts and reset the page info completely.
     #
     if (($layout eq 'None'))
     {
 	$self
 	->postponeSend("All (CurrentPage, Maximizable) Maximize False");
+
+	delete $self->{desks}->{$desk}->{$pagex}->{$pagey};
+	$self->init_new_page(desk_n=>$desk,
+			     page_x=>$pagex,
+			     page_y=>$pagey);
+	$page_info = $self->{desks}->{$desk}->{$pagex}->{$pagey};
 	$page_info->{LAYOUT} = $layout;
 	$page_info->{MAX_WIN} = undef;
 	$page_info->{OPTIONS} = [];
@@ -626,19 +632,7 @@ sub apply_tiling {
     my ($left_offset, $right_offset, $top_offset, $bottom_offset)
 	= split ' ', $struts;
 
-
-    if (($layout eq 'Full'))
-    {
-	if ($page_info->num_groups() != $max_win)
-	{
-	    $page_info->redistribute_windows(n_groups=>$max_win);
-	}
-	$self->send("All (CurrentPage, Maximizable) Maximize On 100 100");
-	$page_info->{LAYOUT} = $layout;
-	$page_info->{MAX_WIN} = $max_win;
-	$page_info->{OPTIONS} = \@options;
-    }
-    elsif (exists $self->{Layouts}->{$layout}
+    if (exists $self->{Layouts}->{$layout}
 	and defined $self->{Layouts}->{$layout})
     {
 	$self->{Layouts}->{$layout}
@@ -836,6 +830,7 @@ sub init_new_page {
 
 Look at the properties of the given window to see if we are interested in it.
 We aren't interested in SKIP_PAGER, SKIP_TASKBAR, DOCK or Withdrawn windows.
+We also aren't interested in transient windows.
 
 Also, we may not be interested in windows of certain classes or names.
 
@@ -879,6 +874,12 @@ sub check_interest {
 	    or /_NET_WM_STATE_SKIP_TASKBAR/
 	    or /_NET_WM_WINDOW_TYPE_DIALOG/
 	    or /window state: Withdrawn/
+	    or /_NET_WM_STATE_STICKY/
+	    or /_NET_WM_WINDOW_TYPE_DIALOG/
+	    or /WM_TRANSIENT_FOR/
+	    or /_NET_WM_WINDOW_TYPE_SPLASH/
+	    or /_NET_WM_WINDOW_TYPE_DESKTOP/
+	    or /_NET_WM_WINDOW_TYPE_MENU/
 	)
 	{
 	    $interest = 0;

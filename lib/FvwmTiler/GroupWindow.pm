@@ -87,7 +87,9 @@ sub arrange_self {
 	module=>undef,
 	@_
     );
-    $args{module}->postponeSend("ResizeMoveMaximize frame $args{width}p $args{height}p $args{x}p $args{y}p", 
+    # Even though we are calling this by window-id, add the window-id condition
+    # to prevent a race condition (i hope)
+    $args{module}->postponeSend("WindowId " . $self->{ID} . " (Maximizable) ResizeMoveMaximize frame $args{width}p $args{height}p $args{x}p $args{y}p", 
 				$self->{ID});
 } # arrange_self
 
