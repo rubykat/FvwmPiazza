@@ -1,14 +1,14 @@
-package FvwmTiler::Page;
+package FvwmPiazza::Page;
 use strict;
 use warnings;
 
 =head1 NAME
 
-FvwmTiler::Page - FvwmTiler class for keeping track of page info.
+FvwmPiazza::Page - FvwmPiazza class for keeping track of page info.
 
 =head1 VERSION
 
-This describes version B<0.01> of FvwmTiler::Page.
+This describes version B<0.01> of FvwmPiazza::Page.
 
 =cut
 
@@ -16,7 +16,7 @@ our $VERSION = '0.01';
 
 =head1 SYNOPSIS
 
-    use base qw(FvwmTiler::Page);
+    use base qw(FvwmPiazza::Page);
 
 =head1 DESCRIPTION
 
@@ -25,8 +25,8 @@ This module keeps track of information for one Fvwm page.
 =cut
 
 use lib `fvwm-perllib dir`;
-use FvwmTiler::Group;
-use FvwmTiler::GroupWindow;
+use FvwmPiazza::Group;
+use FvwmPiazza::GroupWindow;
 
 use base qw( Class::Base );
 
@@ -267,7 +267,7 @@ sub new_group {
     {
 	$gid++;
     }
-    $self->{groups}->{$gid} = FvwmTiler::Group->new(GID=>$gid);
+    $self->{groups}->{$gid} = FvwmPiazza::Group->new(GID=>$gid);
 
 } # new_group
 
@@ -516,5 +516,5 @@ under the same terms as Perl itself.
 
 =cut
 
-1; # End of FvwmTiler::Page
+1; # End of FvwmPiazza::Page
 __END__

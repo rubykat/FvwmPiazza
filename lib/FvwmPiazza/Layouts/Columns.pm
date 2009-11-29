@@ -1,14 +1,14 @@
-package FvwmTiler::Layouts::Rows;
+package FvwmPiazza::Layouts::Columns;
 use strict;
 use warnings;
 
 =head1 NAME
 
-FvwmTiler::Layouts::Rows - Rows layout.
+FvwmPiazza::Layouts::Columns - Columns layout.
 
 =head1 VERSION
 
-This describes version B<0.01> of FvwmTiler::Layouts::Rows.
+This describes version B<0.01> of FvwmPiazza::Layouts::Columns.
 
 =cut
 
@@ -20,19 +20,20 @@ our $VERSION = '0.01';
 
 =head1 DESCRIPTION
 
-This defines the "Rows" layout for FvwmTiler.
+This defines the "Columns" layout
+for FvwmPiazza.
 
 =cut
 
 use lib `fvwm-perllib dir`;
 
 use FVWM::Module;
-use FvwmTiler::Tiler;
-use FvwmTiler::Page;
-use FvwmTiler::Group;
-use FvwmTiler::GroupWindow;
+use FvwmPiazza::Tiler;
+use FvwmPiazza::Page;
+use FvwmPiazza::Group;
+use FvwmPiazza::GroupWindow;
 
-use base qw( FvwmTiler::Layouts );
+use base qw( FvwmPiazza::Layouts );
 
 our $ERROR;
 our $DEBUG = 0 unless defined $DEBUG;
@@ -94,50 +95,50 @@ sub apply_layout {
     my $working_height = $args{vp_height} -
 	($args{top_offset} + $args{bottom_offset});
 
-    my $num_rows = $args{max_win};
+    my $num_cols = $args{max_win};
     my $num_win = $area->num_windows();
 
     if ($num_win == 0)
     {
 	return $self->error("there are zero windows");
     }
-    if ($num_win < $num_rows)
+    if ($num_win < $num_cols)
     {
 	$area->redistribute_windows(n_groups=>$num_win);
-	$num_rows = $num_win;
+	$num_cols = $num_win;
     }
-    elsif ($area->num_groups() != $num_rows)
+    elsif ($area->num_groups() != $num_cols)
     {
-	$area->redistribute_windows(n_groups=>$num_rows);
+	$area->redistribute_windows(n_groups=>$num_cols);
     }
-
-    # Calculate the row heights
-    # Don't apply the passed-in ratios if we have fewer rows
+    
+    # Calculate the column widths
+    # Don't apply the passed-in ratios if we have fewer columns
     # than the layout requires
     my @ratios = ();
-    if ($num_rows == $args{max_win} and defined $options[0])
+    if ($num_cols == $args{max_win} and defined $options[0])
     {
-	@ratios = $self->calculate_ratios(num_sets=>$num_rows,
+	@ratios = $self->calculate_ratios(num_sets=>$num_cols,
 	    ratios=>$options[0]);
     }
     else
     {
-	@ratios = $self->calculate_ratios(num_sets=>$num_rows);
+	@ratios = $self->calculate_ratios(num_sets=>$num_cols);
     }
 
     # Arrange the windows
     my $ypos = $args{top_offset};
     my $xpos = $args{left_offset};
-    for (my $row_nr=0; $row_nr < $num_rows; $row_nr++)
+    for (my $col_nr=0; $col_nr < $num_cols; $col_nr++)
     {
-	my $row_height = int($working_height * $ratios[$row_nr]);
-	my $group = $area->group($row_nr);
+	my $col_width = int($working_width * $ratios[$col_nr]);
+	my $group = $area->group($col_nr);
 	$group->arrange_group(module=>$args{tiler},
-			      x=>$xpos,
-			      y=>$ypos,
-			      width=>$working_width,
-			      height=>$row_height);
-	$ypos += $row_height;
+	    x=>$xpos,
+	    y=>$ypos,
+	    width=>$col_width,
+	    height=>$working_height);
+	$xpos += $col_width;
     }
 
 } # apply_layout
@@ -165,5 +166,5 @@ under the same terms as Perl itself.
 
 =cut
 
-1; # End of FvwmTiler::Layouts
+1; # End of FvwmPiazza::Layouts
 __END__

@@ -14,7 +14,7 @@ This tiles windows in different ways.
 =cut
 use lib `fvwm-perllib dir`;
 
-use FvwmTiler::Tiler;
+use FvwmPiazza::Tiler;
 
 #========================================================
 # Subroutines
@@ -24,7 +24,7 @@ use FvwmTiler::Tiler;
 
 MAIN:
 {
-    my $tiler = new FvwmTiler::Tiler();
+    my $tiler = new FvwmPiazza::Tiler();
 
     $tiler->start();
 

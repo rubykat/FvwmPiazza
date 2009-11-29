@@ -1,14 +1,14 @@
-package FvwmTiler::Layouts::Grid;
+package FvwmPiazza::Layouts::Grid;
 use strict;
 use warnings;
 
 =head1 NAME
 
-FvwmTiler::Layouts::Grid - Grid layout.
+FvwmPiazza::Layouts::Grid - Grid layout.
 
 =head1 VERSION
 
-This describes version B<0.01> of FvwmTiler::Layouts::Grid.
+This describes version B<0.01> of FvwmPiazza::Layouts::Grid.
 
 =cut
 
@@ -20,19 +20,19 @@ our $VERSION = '0.01';
 
 =head1 DESCRIPTION
 
-This defines the "Grid" layout for FvwmTiler.
+This defines the "Grid" layout for FvwmPiazza.
 
 =cut
 
 use lib `fvwm-perllib dir`;
 
 use FVWM::Module;
-use FvwmTiler::Tiler;
-use FvwmTiler::Page;
-use FvwmTiler::Group;
-use FvwmTiler::GroupWindow;
+use FvwmPiazza::Tiler;
+use FvwmPiazza::Page;
+use FvwmPiazza::Group;
+use FvwmPiazza::GroupWindow;
 
-use base qw( FvwmTiler::Layouts );
+use base qw( FvwmPiazza::Layouts );
 
 our $ERROR;
 our $DEBUG = 0 unless defined $DEBUG;
@@ -199,5 +199,5 @@ under the same terms as Perl itself.
 
 =cut
 
-1; # End of FvwmTiler::Layouts
+1; # End of FvwmPiazza::Layouts
 __END__

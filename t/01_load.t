@@ -1,7 +1,7 @@
 use Test::More tests => 1;
 
 BEGIN {
-use_ok( 'FvwmTiler::Tiler' );
+use_ok( 'FvwmPiazza::Tiler' );
 }
 
-diag( "Testing FvwmTiler::Tiler ${FvwmTiler::Tiler::VERSION}" );
+diag( "Testing FvwmPiazza::Tiler ${FvwmPiazza::Tiler::VERSION}" );

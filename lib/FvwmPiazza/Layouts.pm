@@ -1,14 +1,14 @@
-package FvwmTiler::Layouts;
+package FvwmPiazza::Layouts;
 use strict;
 use warnings;
 
 =head1 NAME
 
-FvwmTiler::Layouts - Base class for FvwmTiler layouts.
+FvwmPiazza::Layouts - Base class for FvwmPiazza layouts.
 
 =head1 VERSION
 
-This describes version B<0.01> of FvwmTiler::Layouts.
+This describes version B<0.01> of FvwmPiazza::Layouts.
 
 =cut
 
@@ -16,12 +16,12 @@ our $VERSION = '0.01';
 
 =head1 SYNOPSIS
 
-    use base qw(FvwmTiler::Layouts);
+    use base qw(FvwmPiazza::Layouts);
 
 =head1 DESCRIPTION
 
 This is the base class for defining different layout modules
-for FvwmTiler.
+for FvwmPiazza.
 
 =cut
 
@@ -31,7 +31,7 @@ use FVWM::Module;
 use General::Parse;
 use YAML::Syck;
 
-use FvwmTiler::Tiler;
+use FvwmPiazza::Tiler;
 
 use base qw( Class::Base );
 
@@ -49,7 +49,7 @@ sub name {
     if (!$self->{NAME})
     {
 	my $name = ref $self;
-	$name =~ s/FvwmTiler::Layouts:://;
+	$name =~ s/FvwmPiazza::Layouts:://;
 	$self->{NAME} = $name;
     }
     return $self->{NAME};
@@ -139,5 +139,5 @@ under the same terms as Perl itself.
 
 =cut
 
-1; # End of FvwmTiler::Layouts
+1; # End of FvwmPiazza::Layouts
 __END__

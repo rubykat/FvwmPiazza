@@ -1,13 +1,13 @@
-package FvwmTiler::Tiler;
+package FvwmPiazza::Tiler;
 use strict;
 
 =head1 NAME
 
-FvwmTiler::Tiler - Fvwm module for tiling windows.
+FvwmPiazza::Tiler - Fvwm module for tiling windows.
 
 =head1 VERSION
 
-This describes version B<0.01> of FvwmTiler::Tiler.
+This describes version B<0.01> of FvwmPiazza::Tiler.
 
 =cut
 
@@ -15,18 +15,18 @@ our $VERSION = '0.01';
 
 =head1 SYNOPSIS
 
-    use FvwmTiler::Tiler;
+    use FvwmPiazza::Tiler;
 
-    my $obj = FvwmTiler::Tiler->new(\%args);
+    my $obj = FvwmPiazza::Tiler->new(\%args);
 
     ---------------------------------
 
-    *FvwmTiler: Struts I<left> I<right> I<top> I<bottom>
-    *FvwmTiler: Exclude Gimp
-    *FvwmTiler: Layout0 Full
-    *FvwmTiler: Layout1 Columns 2
+    *FvwmPiazza: Struts I<left> I<right> I<top> I<bottom>
+    *FvwmPiazza: Exclude Gimp
+    *FvwmPiazza: Layout0 Full
+    *FvwmPiazza: Layout1 Columns 2
 
-    Key	f   A	MS  SendToModule FvwmTiler Full
+    Key	f   A	MS  SendToModule FvwmPiazza Full
 
 
 =head1 DESCRIPTION
@@ -40,13 +40,13 @@ use lib `fvwm-perllib dir`;
 use FVWM::Module;
 use General::Parse;
 use YAML::Syck;
-use FvwmTiler::Page;
-use FvwmTiler::Group;
-use FvwmTiler::GroupWindow;
+use FvwmPiazza::Page;
+use FvwmPiazza::Group;
+use FvwmPiazza::GroupWindow;
 
 use base qw( FVWM::Module );
 
-use Module::Pluggable search_path => 'FvwmTiler::Layouts',
+use Module::Pluggable search_path => 'FvwmPiazza::Layouts',
     sub_name => 'layouts', instantiate => 'new';
 
 our $ERROR;
@@ -64,7 +64,7 @@ sub new {
     );
 
     my $self = $class->SUPER::new(
-	Name => "FvwmTiler",
+	Name => "FvwmPiazza",
 	Mask => M_STRING | M_FOCUS_CHANGE,
 	EnableAlias => 1,
 	Debug => 0,
@@ -281,7 +281,7 @@ sub observe_window_addition {
 	$self->debug("Not Interested in window $wid");
 	return 0;
     }
-    my $new_window = FvwmTiler::GroupWindow->new(ID=>$wid);
+    my $new_window = FvwmPiazza::GroupWindow->new(ID=>$wid);
     $self->{all_windows}->{$wid} = $new_window;
     $self->manage_window(window=>$wid);
 } # observe_window_addition
@@ -792,7 +792,7 @@ sub init_new_page {
 	or !defined $self->{desks}->{$desk_n}->{$pagex}->{$pagey})
     {
 	$self->{desks}->{$desk_n}->{$pagex}->{$pagey} = 
-	    FvwmTiler::Page->new(DESK=>$desk_n,
+	    FvwmPiazza::Page->new(DESK=>$desk_n,
 				 PAGEX=>$pagex,
 				 PAGEY=>$pagey,
 				 LAYOUT=>'None');
@@ -803,7 +803,7 @@ sub init_new_page {
 	foreach my $wid (sort keys %page_windows)
 	{
 	    my $pwin = $page_windows{$wid};
-	    my $new_window = FvwmTiler::GroupWindow
+	    my $new_window = FvwmPiazza::GroupWindow
 		->new(ID=>$wid,
 		      X=>$pwin->{x},
 		      Y=>$pwin->{y},
@@ -821,7 +821,7 @@ sub init_new_page {
 	->windows_to_n_groups(window_list=>\@windows, n_groups=>1))
 	{
 	    $self->debug("init_new_page ($desk_n/$pagex/$pagey) error: "
-	    . FvwmTiler::Page->error());
+	    . FvwmPiazza::Page->error());
 	}
     }
 } # init_new_page
@@ -858,7 +858,7 @@ sub check_interest {
 	$window = $args{window};
 	$wid = $window->{id};
     }
-    elsif (ref $args{window} eq "FvwmTiler::GroupWindow")
+    elsif (ref $args{window} eq "FvwmPiazza::GroupWindow")
     {
 	$wid = $window->{ID};
     }
@@ -1046,5 +1046,5 @@ under the same terms as Perl itself.
 
 =cut
 
-1; # End of FvwmTiler::Tiler
+1; # End of FvwmPiazza::Tiler
 __END__

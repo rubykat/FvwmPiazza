@@ -11,7 +11,7 @@
 ^mod_devaid.conf$
 
 # distro files
-^FvwmTiler-*
+^FvwmPiazza-*
 
 # ExtUtils::MakeMaker generated files and dirs.
 ^Makefile$

@@ -3,10 +3,10 @@ use warnings;
 use Module::Build;
 
 my $builder = Module::Build->new(
-    module_name         => 'FvwmTiler',
+    module_name         => 'FvwmPiazza',
     license             => 'perl',
     dist_author         => 'Kathryn Andersen',
-    dist_version_from   => 'lib/FvwmTiler/Tiler.pm',
+    dist_version_from   => 'lib/FvwmPiazza/Tiler.pm',
 	requires            => {
 	     # module requirements here
 
@@ -15,7 +15,7 @@ my $builder = Module::Build->new(
         'Test::More' => 0,
     },
     create_makefile_pl => 'traditional',
-#    add_to_cleanup      => [ 'FvwmTiler-*' ],
+#    add_to_cleanup      => [ 'FvwmPiazza-*' ],
 );
 
 $builder->create_build_script();

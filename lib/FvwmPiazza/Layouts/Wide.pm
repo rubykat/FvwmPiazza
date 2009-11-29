@@ -1,14 +1,14 @@
-package FvwmTiler::Layouts::Wide;
+package FvwmPiazza::Layouts::Wide;
 use strict;
 use warnings;
 
 =head1 NAME
 
-FvwmTiler::Layouts::Wide - Wide layout.
+FvwmPiazza::Layouts::Wide - Wide layout.
 
 =head1 VERSION
 
-This describes version B<0.01> of FvwmTiler::Layouts::Wide.
+This describes version B<0.01> of FvwmPiazza::Layouts::Wide.
 
 =cut
 
@@ -20,7 +20,7 @@ our $VERSION = '0.01';
 
 =head1 DESCRIPTION
 
-This defines the "Wide" layout for FvwmTiler.
+This defines the "Wide" layout for FvwmPiazza.
 One "wide" row and the rest of the windows in the other row.
 
 =cut
@@ -28,12 +28,12 @@ One "wide" row and the rest of the windows in the other row.
 use lib `fvwm-perllib dir`;
 
 use FVWM::Module;
-use FvwmTiler::Tiler;
-use FvwmTiler::Page;
-use FvwmTiler::Group;
-use FvwmTiler::GroupWindow;
+use FvwmPiazza::Tiler;
+use FvwmPiazza::Page;
+use FvwmPiazza::Group;
+use FvwmPiazza::GroupWindow;
 
-use base qw( FvwmTiler::Layouts );
+use base qw( FvwmPiazza::Layouts );
 
 our $ERROR;
 our $DEBUG = 0 unless defined $DEBUG;
@@ -198,5 +198,5 @@ under the same terms as Perl itself.
 
 =cut
 
-1; # End of FvwmTiler::Layouts
+1; # End of FvwmPiazza::Layouts
 __END__

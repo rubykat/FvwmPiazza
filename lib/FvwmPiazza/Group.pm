@@ -1,14 +1,14 @@
-package FvwmTiler::Group;
+package FvwmPiazza::Group;
 use strict;
 use warnings;
 
 =head1 NAME
 
-FvwmTiler::Group - FvwmTiler class for grouping.
+FvwmPiazza::Group - FvwmPiazza class for grouping.
 
 =head1 VERSION
 
-This describes version B<0.01> of FvwmTiler::Group.
+This describes version B<0.01> of FvwmPiazza::Group.
 
 =cut
 
@@ -16,7 +16,7 @@ our $VERSION = '0.01';
 
 =head1 SYNOPSIS
 
-    use base qw(FvwmTiler::Group);
+    use base qw(FvwmPiazza::Group);
 
 =head1 DESCRIPTION
 
@@ -86,7 +86,7 @@ sub add_window_to_group {
     else
     {
 	$wid = $args{window};
-	$window = FvwmTiler::GroupWindow->new(ID=>$wid);
+	$window = FvwmPiazza::GroupWindow->new(ID=>$wid);
     }
     $window->set_group(group=>$self->{GID});
     if (exists $self->{windows}->{$wid}

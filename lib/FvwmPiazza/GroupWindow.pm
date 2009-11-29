@@ -1,14 +1,14 @@
-package FvwmTiler::GroupWindow;
+package FvwmPiazza::GroupWindow;
 use strict;
 use warnings;
 
 =head1 NAME
 
-FvwmTiler::GroupWindow - FvwmTiler class for windows.
+FvwmPiazza::GroupWindow - FvwmPiazza class for windows.
 
 =head1 VERSION
 
-This describes version B<0.01> of FvwmTiler::GroupWindow.
+This describes version B<0.01> of FvwmPiazza::GroupWindow.
 
 =cut
 
@@ -16,7 +16,7 @@ our $VERSION = '0.01';
 
 =head1 SYNOPSIS
 
-    use FvwmTiler::GroupWindow;
+    use FvwmPiazza::GroupWindow;
 
 =head1 DESCRIPTION
 
