@@ -104,11 +104,12 @@ sub apply_layout {
     }
     my $num_cols = 2;
     $num_cols = 1 if $num_win == 1;
-    my $tall_col_nr = 0;
-    if (defined $options[0] and $options[0] =~ /Right/)
-    {
-	$tall_col_nr = 1;
-    }
+    my $tall_style = (@options ? shift @options : '');
+    my $tall_col_nr = ($tall_style =~ /Right/i ? 1 : 0);
+    my $width_ratio = (@options ? shift @options : '');
+    my $height_ratio = (@options ? shift @options : '');
+
+    # adjust the max-win if we have few windows
     if ($num_win < $max_win)
     {
 	$max_win = $num_win;
@@ -121,18 +122,22 @@ sub apply_layout {
     my $num_rows = $max_win - 1;
     $num_rows = 1 if $num_rows <= 0;
 
-    my $col_width = int($working_width/$num_cols);
-    my $row_height = int($working_height/$num_rows);
-    $args{tiler}
-    ->debug("Tall: max_win=$max_win, num_rows=$num_rows, col_width=$col_width, row_height=$row_height");
+    # Calculate the width and height ratios
+    my @width_ratios =
+	$self->calculate_ratios(num_sets=>$num_cols, ratios=>$width_ratio);
+    my @height_ratios =
+	$self->calculate_ratios(num_sets=>$num_rows, ratios=>$height_ratio);
+
     my $col_nr = 0;
     my $row_nr = 0;
+    my $ypos = $args{top_offset};
+    my $xpos = $args{left_offset};
     for (my $gnr=0; $gnr < $max_win; $gnr++)
     {
+	my $col_width = int($working_width * $width_ratios[$col_nr]);
+	my $row_height = int($working_height * $height_ratios[$row_nr]);
 	my $group = $area->group($gnr);
 
-	my $xpos = $args{left_offset} + ($col_nr * $col_width);
-	my $ypos = $args{top_offset} + ($row_nr * $row_height);
 	if ($col_nr == $tall_col_nr)
 	{
 	    $group->arrange_group(module=>$args{tiler},
@@ -158,20 +163,27 @@ sub apply_layout {
 	{
 	    $col_nr++;
 	    $row_nr = 0;
+	    $ypos = $args{top_offset};
+	    $xpos += $col_width;
 	}
 	else
 	{
 	    $row_nr++;
+	    $ypos += $row_height;
 	    if ($row_nr == $num_rows)
 	    {
 		$row_nr = 0;
+		$ypos = $args{top_offset};
 		$col_nr++;
+		$xpos += $col_width;
 	    }
 	}
 	if ($col_nr == $num_cols)
 	{
 	    $col_nr = 0;
 	    $row_nr = 0;
+	    $xpos = $args{left_offset};
+	    $ypos = $args{top_offset};
 	}
     }
 
