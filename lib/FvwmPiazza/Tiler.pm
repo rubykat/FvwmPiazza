@@ -413,7 +413,7 @@ sub handle_command {
     my $self = shift;
     my $event = shift;
 
-    my ($action, $args) = getToken($event->_text);
+    my ($action, $args) = get_token($event->_text);
     return unless $action;
     if ($action =~ /debug/i)
     {
@@ -458,7 +458,7 @@ sub set_transaction {
 		args=>'',
 		@_
 	       );
-    my ($on_off, $other_args) = getToken($args{args});
+    my ($on_off, $other_args) = get_token($args{args});
     my $on = 0;
     if ($on_off =~ /^(on|true|start)$/i)
     {
