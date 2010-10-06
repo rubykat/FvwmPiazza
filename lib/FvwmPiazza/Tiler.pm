@@ -114,7 +114,37 @@ sub init {
     my $desk_pages_y = $this_page->{desk_pages_y};
     foreach my $key (sort keys %{$conf})
     {
-	if ($key =~ /Layout(\d+)/)
+	if ($key =~ /Layout(\d+)-(\d+)-(\d+)/) # By Page
+	{
+	    my $desk_n = $1;
+	    my $pagex_n = $2;
+	    my $pagey_n = $3;
+	    $self->debug("init: desk_n=$desk_n, pagex_n=$pagex_n, pagey_n=$pagey_n, desk_pages_x=$desk_pages_x, desk_pages_y=$desk_pages_y");
+
+	    my $action = '';
+	    my $max_win = 1;
+	    my @options = ();
+	    if ($conf->{$key} =~ /Full/)
+	    {
+		$action = 'Full';
+		$max_win = 1;
+	    }
+	    else
+	    {
+		my $opt_str;
+		($action, $opt_str) = split(' ', $conf->{$key}, 2);
+		@options = split(',', $opt_str);
+		$max_win = shift @options;
+	    }
+	    $self->init_new_page(desk_n=>$desk_n,
+				 page_x=>$pagex_n,
+				 page_y=>$pagey_n);
+	    my $page_info = $self->{desks}->{$desk_n}->{$pagex_n}->{$pagey_n};
+	    $page_info->{LAYOUT} = $action;
+	    $page_info->{MAX_WIN} = $max_win;
+	    $page_info->{OPTIONS} = \@options;
+	}
+	elsif ($key =~ /Layout(\d+)/) # By Desktop
 	{
 	    my $desk_n = $1;
 	    $self->debug("init: desk_n=$desk_n, desk_pages_x=$desk_pages_x, desk_pages_y=$desk_pages_y");
@@ -138,13 +168,16 @@ sub init {
 	    {
 		for (my $pagey=0; $pagey < $desk_pages_y; $pagey++)
 		{
-		    $self->init_new_page(desk_n=>$desk_n,
-					 page_x=>$pagex,
-					 page_y=>$pagey);
-		    my $page_info = $self->{desks}->{$desk_n}->{$pagex}->{$pagey};
-		    $page_info->{LAYOUT} = $action;
-		    $page_info->{MAX_WIN} = $max_win;
-		    $page_info->{OPTIONS} = \@options;
+		    if (!exists $self->{desks}->{$desk_n}->{$pagex}->{$pagey})
+		    {
+			$self->init_new_page(desk_n=>$desk_n,
+					     page_x=>$pagex,
+					     page_y=>$pagey);
+			my $page_info = $self->{desks}->{$desk_n}->{$pagex}->{$pagey};
+			$page_info->{LAYOUT} = $action;
+			$page_info->{MAX_WIN} = $max_win;
+			$page_info->{OPTIONS} = \@options;
+		    }
 		}
 	    }
 	}
@@ -413,7 +446,7 @@ sub handle_command {
     my $self = shift;
     my $event = shift;
 
-    my ($action, $args) = getToken($event->_text);
+    my ($action, $args) = get_token($event->_text);
     return unless $action;
     if ($action =~ /debug/i)
     {
@@ -458,7 +491,7 @@ sub set_transaction {
 		args=>'',
 		@_
 	       );
-    my ($on_off, $other_args) = getToken($args{args});
+    my ($on_off, $other_args) = get_token($args{args});
     my $on = 0;
     if ($on_off =~ /^(on|true|start)$/i)
     {
