@@ -49,9 +49,6 @@ use base qw( FVWM::Module );
 use Module::Pluggable search_path => 'FvwmPiazza::Layouts',
     sub_name => 'layouts', instantiate => 'new';
 
-our $ERROR;
-our $DEBUG = 0 unless defined $DEBUG;
-
 =head1 METHODS
 
 =head2 new
@@ -276,14 +273,7 @@ sub observe_window_addition {
     my $wid = shift;
     my $old_data = shift;
 
-    if (!$self->check_interest(window=>$wid))
-    {
-	$self->debug("Not Interested in window $wid");
-	return 0;
-    }
-    my $new_window = FvwmPiazza::GroupWindow->new(ID=>$wid);
-    $self->{all_windows}->{$wid} = $new_window;
-    $self->manage_window(window=>$wid);
+    return $self->remember_window($wid);
 } # observe_window_addition
 
 =head2 observe_window_deletion
@@ -299,16 +289,7 @@ sub observe_window_deletion {
     my $wid = shift;
     my $old_data = shift;
 
-    if (exists $self->{all_windows}->{$wid}
-	and defined $self->{all_windows}->{$wid})
-    {
-	my $gid = $self->{all_windows}->{$wid}->{GID};
-	delete $self->{all_windows}->{$wid};
-
-	$self->demanage_window(window=>$wid,
-			       group=>$gid);
-
-    }
+    return $self->forget_window($wid);
 } # observe_window_deletion
 
 =head2 observe_window_iconify
@@ -415,7 +396,7 @@ sub handle_command {
 
     my ($action, $args) = get_token($event->_text);
     return unless $action;
-    if ($action =~ /debug/i)
+    if ($action =~ /dump/i)
     {
 	$self->debug("===============================\n"
 		     . Dump($self)
@@ -424,6 +405,12 @@ sub handle_command {
     elsif ($action =~ /transaction/i)
     {
 	$self->set_transaction(event=>$event,
+			       action=>$action,
+			       args=>$args);
+    }
+    elsif ($action =~ /forget|remember/i)
+    {
+	$self->change_window_knowledge(event=>$event,
 			       action=>$action,
 			       args=>$args);
     }
@@ -477,7 +464,7 @@ sub move_window_group {
     my $self = shift;
     my %args = (
 		event=>undef,
-		action=>'Transaction',
+		action=>'',
 		args=>'',
 		@_
 	       );
@@ -491,7 +478,7 @@ sub move_window_group {
     if (!exists $self->{all_windows}->{$wid}
 	or !defined $self->{all_windows}->{$wid})
     {
-	$self->showError("$action: window $wid not known");
+	$self->showError(sprintf("%s: window 0x%x not known", $action, $wid));
 	return 0;
     }
     my $desk = $self->{pageTracker}->data->{desk_n};
@@ -522,6 +509,85 @@ sub move_window_group {
 	}
     }
 } # move_window_group
+
+=head2 change_window_knowledge
+
+Remember or forget the given window of this event.
+
+=cut
+sub change_window_knowledge {
+    my $self = shift;
+    my %args = (
+		event=>undef,
+		action=>'',
+		args=>'',
+		@_
+	       );
+    my $action = $args{action};
+    my $wid = $args{event}->_win_id;
+    if (!defined $wid or !$wid)
+    {
+	$self->showError("$action: no window given");
+	return 0;
+    }
+    if ($args{action} =~ /forget/i)
+    {
+	$self->forget_window($wid);
+    }
+    else
+    {
+	$self->remember_window($wid);
+    }
+} # change_window_knowledge
+
+=head2 remember_window
+
+Add this window to those we are interested in.
+
+=cut
+sub remember_window {
+    my $self = shift;
+    my $wid = shift;
+
+    if (!$self->check_interest(window=>$wid))
+    {
+	$self->debug(sprintf("Not Interested in window 0x%x", $wid));
+	return 0;
+    }
+    if (!exists $self->{all_windows}->{$wid}
+	or !defined $self->{all_windows}->{$wid})
+    {
+	my $new_window = FvwmPiazza::GroupWindow->new(ID=>$wid);
+	$self->{all_windows}->{$wid} = $new_window;
+	$self->debug(sprintf("Remembering 0x%x", $wid));
+	$self->manage_window(window=>$wid);
+    }
+} # remember_window
+
+=head2 forget_window
+
+Remove this window from those we are interested in.
+
+=cut
+sub forget_window {
+    my $self = shift;
+    my $wid = shift;
+
+    if (exists $self->{all_windows}->{$wid}
+	and defined $self->{all_windows}->{$wid})
+    {
+	$self->debug(sprintf("Forgetting 0x%x", $wid));
+	my $gid = $self->{all_windows}->{$wid}->{GID};
+	delete $self->{all_windows}->{$wid};
+
+	$self->demanage_window(window=>$wid,
+			       group=>$gid);
+    }
+    else
+    {
+	$self->debug(sprintf("Already forgotten 0x%x", $wid));
+    }
+} # forget_window
 
 =head2 apply_tiling
 
@@ -883,6 +949,7 @@ sub check_interest {
 	)
 	{
 	    $interest = 0;
+	    $self->debug(sprintf("No interest in 0x%x because %s", $wid, $_));
 	    last;
 	}
 	# if we are including or excluding, then remember the class and names
@@ -915,6 +982,7 @@ sub check_interest {
 	    if ($exclude and $name =~ /$exclude/i)
 	    {
 		$excluded = 1;
+		$self->debug(sprintf("No interest in 0x%x because excluding '%s'", $wid, $name));
 	    }
 	}
 	if (!$included or $excluded)
