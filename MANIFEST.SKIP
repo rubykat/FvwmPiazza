@@ -5,11 +5,8 @@
 ^\.git/
 ^\.gitignore
 
-# ModDevAid
-^version.txt$
-^old_version.txt$
-^darcs_prebuild.pl$
-^mod_devaid.conf$
+# Dist::Zilla
+^dist.ini$
 
 # distro files
 ^FvwmPiazza-*
