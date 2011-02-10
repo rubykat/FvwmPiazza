@@ -6,14 +6,6 @@ use warnings;
 
 FvwmPiazza::GroupWindow - FvwmPiazza class for windows.
 
-=head1 VERSION
-
-This describes version B<0.01> of FvwmPiazza::GroupWindow.
-
-=cut
-
-our $VERSION = '0.01';
-
 =head1 SYNOPSIS
 
     use FvwmPiazza::GroupWindow;

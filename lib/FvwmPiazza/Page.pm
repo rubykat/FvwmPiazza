@@ -6,14 +6,6 @@ use warnings;
 
 FvwmPiazza::Page - FvwmPiazza class for keeping track of page info.
 
-=head1 VERSION
-
-This describes version B<0.01> of FvwmPiazza::Page.
-
-=cut
-
-our $VERSION = '0.01';
-
 =head1 SYNOPSIS
 
     use base qw(FvwmPiazza::Page);

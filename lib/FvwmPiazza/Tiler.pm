@@ -5,14 +5,6 @@ use strict;
 
 FvwmPiazza::Tiler - Fvwm module for tiling windows.
 
-=head1 VERSION
-
-This describes version B<0.01> of FvwmPiazza::Tiler.
-
-=cut
-
-our $VERSION = '0.01';
-
 =head1 SYNOPSIS
 
     use FvwmPiazza::Tiler;

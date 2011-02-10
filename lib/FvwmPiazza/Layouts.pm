@@ -6,14 +6,6 @@ use warnings;
 
 FvwmPiazza::Layouts - Base class for FvwmPiazza layouts.
 
-=head1 VERSION
-
-This describes version B<0.01> of FvwmPiazza::Layouts.
-
-=cut
-
-our $VERSION = '0.01';
-
 =head1 SYNOPSIS
 
     use base qw(FvwmPiazza::Layouts);

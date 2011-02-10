@@ -6,14 +6,6 @@ use warnings;
 
 FvwmPiazza::Group - FvwmPiazza class for grouping.
 
-=head1 VERSION
-
-This describes version B<0.01> of FvwmPiazza::Group.
-
-=cut
-
-our $VERSION = '0.01';
-
 =head1 SYNOPSIS
 
     use base qw(FvwmPiazza::Group);

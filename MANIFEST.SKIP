@@ -2,7 +2,8 @@
 \bRCS\b
 \bCVS\b
 ,v$
-^_darcs/
+^\.git/
+^\.gitignore
 
 # ModDevAid
 ^version.txt$
@@ -19,11 +20,11 @@
 ^blibdirs$
 ^pm_to_blib$
 ^MakeMaker-\d
-                                                                                                                    
+
 # Module::Build
 ^Build$
 ^_build/
-                                                                                                                    
+
 # Temp, old, vi and emacs files.
 ~$
 \.old$
