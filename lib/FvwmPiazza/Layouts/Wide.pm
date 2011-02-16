@@ -6,14 +6,6 @@ use warnings;
 
 FvwmPiazza::Layouts::Wide - Wide layout.
 
-=head1 VERSION
-
-This describes version B<0.01> of FvwmPiazza::Layouts::Wide.
-
-=cut
-
-our $VERSION = '0.01';
-
 =head1 SYNOPSIS
 
     $obj->apply_layout(%args);

@@ -6,14 +6,6 @@ use warnings;
 
 FvwmPiazza::Page - FvwmPiazza class for keeping track of page info.
 
-=head1 VERSION
-
-This describes version B<0.01> of FvwmPiazza::Page.
-
-=cut
-
-our $VERSION = '0.01';
-
 =head1 SYNOPSIS
 
     use base qw(FvwmPiazza::Page);
@@ -252,6 +244,104 @@ sub redistribute_windows {
     return $self->windows_to_n_groups(window_list=>\@window_list, n_groups=>$n_groups);
 } # redistribute_windows
 
+=head2 add_window_to_page
+
+Add a new window to the page.
+
+$self->add_window_to_page(window=>$wid, current_group=>$gid);
+
+=cut
+sub add_window_to_page {
+    my $self = shift;
+    my %args = (
+	window=>0,
+	current_group=>0,
+	@_
+    );
+
+    my $old_group_count = $self->num_groups();
+    if ($old_group_count < $self->{MAX_WIN})
+    {
+	# create a new group and add a window to it
+	my $new_gid = $self->new_group();
+	$self->add_window_to_group(window=>$args{window},
+				   group=>$new_gid);
+    }
+    elsif (defined $args{current_group}
+	and exists $self->{groups}->{$args{current_group}})
+    {
+	if (!$self->add_window_to_group(window=>$args{window},
+				   group=>$args{current_group}))
+	{
+	    $self->add_window_to_group(window=>$args{window},
+				       group=>0);
+	}
+    }
+    else
+    {
+	$self->add_window_to_group(window=>$args{window},
+				   group=>0);
+    }
+    return 1;
+} # add_window_to_page
+
+=head2 remove_window_from_page
+
+Remove a window from the page.
+
+$self->remove_window_from_page(window=>$wid, group=>$gid);
+
+=cut
+sub remove_window_from_page {
+    my $self = shift;
+    my %args = (
+	window=>0,
+	group=>0,
+	@_
+    );
+
+    my $old_group_count = $self->num_groups();
+    $self->remove_window_from_group(window=>$args{window},
+				    group=>$args{group});
+    # if this group has no more windows in it
+    # remove this group
+    if ($self->{groups}->{$args{group}}->num_windows() == 0)
+    {
+	$self->destroy_group(group=>$args{group});
+	$self->renumber_groups();
+    }
+
+    return 1;
+} # remove_window_from_page
+
+=head2 renumber_groups
+
+Renumber the groups and their windows.
+
+=cut
+sub renumber_groups {
+    my $self = shift;
+
+    my @group_windows = ();
+    foreach my $gid (sort keys %{$self->{groups}})
+    {
+	my @window_list = ();
+	push @window_list, $self->{groups}->{$gid}->remove_all_windows();
+	push @group_windows, \@window_list;
+	$self->destroy_group(group=>$gid);
+    }
+    while (@group_windows)
+    {
+	my @window_list = @{shift @group_windows};
+	my $new_gid = $self->new_group();
+	while (@window_list)
+	{
+	    my $window = shift @window_list;
+	    $self->{groups}->{$new_gid}->add_window_to_group(window=>$window);
+	}
+    }
+} # renumber_groups
+
 =head2 new_group
 
 $self->new_group();
@@ -268,7 +358,7 @@ sub new_group {
 	$gid++;
     }
     $self->{groups}->{$gid} = FvwmPiazza::Group->new(GID=>$gid);
-
+    return $gid;
 } # new_group
 
 =head2 destroy_group
@@ -348,29 +438,36 @@ sub move_window_to_next_group {
     {
 	return $self->error("window must be a class");
     }
-    if ($self->num_groups() <= 1)
+    if ($self->{MAX_WIN} <= 1)
     {
 	return $self->error("no other group");
     }
     my $window = $args{window};
     my $old_gid = $window->{GID};
+    if (!defined $old_gid)
+    {
+	return $self->error("window GID undefined");
+    }
     $self->remove_window_from_group(window=>$window,
 				    group=>$old_gid);
     my $new_gid = $old_gid;
     $new_gid++;
     if ($new_gid == $self->num_groups())
     {
-	$new_gid = 0;
+	if ($new_gid < $self->{MAX_WIN})
+	{
+	    $new_gid = $self->new_group();
+	}
+	else
+	{
+	    $new_gid = 0;
+	}
     }
     if ($self->{groups}->{$old_gid}->num_windows() == 0)
     {
-	# take a window from the new group and put it in the old
-	# group if the old group would otherwise be empty.
-	# In other words, swap.
-	my $other_window = $self->remove_window_from_group(window=>'Any',
-							   group=>$new_gid);
-	$self->add_window_to_group(window=>$other_window,
-				   group=>$old_gid) if $other_window;
+	# If the group would be empty, destroy it.
+	$self->destroy_group(group=>$old_gid);
+	$self->renumber_groups();
     }
     $self->add_window_to_group(window=>$window,
 			       group=>$new_gid);
@@ -396,29 +493,36 @@ sub move_window_to_prev_group {
     {
 	return $self->error("window must be a class");
     }
-    if ($self->num_groups() <= 1)
+    if ($self->{MAX_WIN} <= 1)
     {
 	return $self->error("no other group");
     }
     my $window = $args{window};
     my $old_gid = $window->{GID};
+    if (!defined $old_gid)
+    {
+	return $self->error("window GID undefined");
+    }
     $self->remove_window_from_group(window=>$window,
 				    group=>$old_gid);
     my $new_gid = $old_gid;
     $new_gid--;
     if ($new_gid < 0)
     {
-	$new_gid = $self->num_groups() - 1;
+	if ($new_gid < $self->{MAX_WIN})
+	{
+	    $new_gid = $self->new_group();
+	}
+	else
+	{
+	    $new_gid = $self->num_groups() - 1;
+	}
     }
     if ($self->{groups}->{$old_gid}->num_windows() == 0)
     {
-	# take a window from the new group and put it in the old
-	# group if the old group would otherwise be empty.
-	# In other words, swap.
-	my $other_window = $self->remove_window_from_group(window=>'Any',
-							   group=>$new_gid);
-	$self->add_window_to_group(window=>$other_window,
-				   group=>$old_gid) if $other_window;
+	# If the group would be empty, destroy it.
+	$self->destroy_group(group=>$old_gid);
+	$self->renumber_groups();
     }
     $self->add_window_to_group(window=>$window,
 			       group=>$new_gid);

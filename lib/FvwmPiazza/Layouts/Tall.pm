@@ -6,14 +6,6 @@ use warnings;
 
 FvwmPiazza::Layouts::Tall - Tall layout.
 
-=head1 VERSION
-
-This describes version B<0.01> of FvwmPiazza::Layouts::Tall.
-
-=cut
-
-our $VERSION = '0.01';
-
 =head1 SYNOPSIS
 
     $obj->apply_layout(%args);
