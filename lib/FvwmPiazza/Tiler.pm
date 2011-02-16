@@ -15,6 +15,7 @@ FvwmPiazza::Tiler - Fvwm module for tiling windows.
 
     *FvwmPiazza: Struts I<left> I<right> I<top> I<bottom>
     *FvwmPiazza: Exclude Gimp
+    *FvwmPiazza: UseMaximize true
     *FvwmPiazza: Layout0 Full
     *FvwmPiazza: Layout1 Columns 2
 
@@ -82,6 +83,7 @@ sub init {
 		Struts => '0 0 0 0',
 		Include => '',
 		Exclude => '',
+		UseMaximize => 1,
 	},
     );
     $self->{pageTracker} = $self->track("PageInfo");
@@ -266,19 +268,8 @@ sub observe_window_movement {
 	    my $old_page_info = $self->{desks}->{$old_desk}->{$old_page_x}->{$old_page_y};
 	    if (defined $old_page_info and defined $old_gid)
 	    {
-		$old_page_info->remove_window_from_group(window=>$wid,
-							 group=>$old_gid);
-		if (!defined $old_page_info->group($old_gid)
-		    or $old_page_info->group($old_gid)->num_windows() == 0)
-		{
-		    $old_page_info->
-			redistribute_windows(
-			n_groups=>($old_page_info->num_windows()
-				   < $old_page_info->{MAX_WIN}
-				   ? $old_page_info->num_windows()
-				   : $old_page_info->{MAX_WIN}),
-			);
-		}
+		$old_page_info->remove_window_from_page(window=>$wid,
+							group=>$old_gid);
 	    }
 	    $self->manage_window(desk=>$new_desk,
 				 pagex=>$new_page_x,
@@ -715,21 +706,13 @@ sub manage_window {
     {
 	my $page_info = $self->{desks}->{$desk_n}->{$pagex}->{$pagey};
 	my $old_win_count = $page_info->num_windows();
-	if (!$page_info->add_window_to_group(window=>$self->{all_windows}->{$wid},
-					     group=>$cur_group))
+	if (!$page_info->add_window_to_page(window=>$self->{all_windows}->{$wid},
+					    current_group=>$cur_group))
 	{
 	    $self->debug("failed to add window: " . $page_info->error());
-	    $page_info->add_window_to_group(window=>$self->{all_windows}->{$wid},
-					    group=>0);
 	}
 	my $new_win_count = $page_info->num_windows();
 	$self->debug("PageInfo[$desk_n][$pagex][$pagey] window count $old_win_count => $new_win_count");
-	if (defined $page_info->{MAX_WIN}
-	    and $page_info->num_groups() != $page_info->{MAX_WIN})
-	{
-	    $self->debug("updating number of groups to $page_info->{MAX_WIN}");
-	    $page_info->redistribute_windows(n_groups=>$page_info->{MAX_WIN});
-	}
     }
     else
     {
@@ -773,9 +756,8 @@ sub demanage_window {
 	and defined $self->{desks}->{$desk_n}->{$pagex}->{$pagey})
     {
 	my $page_info = $self->{desks}->{$desk_n}->{$pagex}->{$pagey};
-	$page_info->remove_window_from_group(window=>$wid,
-					     group=>$gid);
-	$page_info->redistribute_windows(n_groups=>$page_info->{MAX_WIN});
+	$page_info->remove_window_from_page(window=>$wid,
+					    group=>$gid);
     }
     if (!$self->{_transaction_on})
     {
