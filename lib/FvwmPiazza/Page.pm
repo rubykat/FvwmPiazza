@@ -465,9 +465,14 @@ sub move_window_to_next_group {
     }
     if ($self->{groups}->{$old_gid}->num_windows() == 0)
     {
-	# If the group would be empty, destroy it.
-	$self->destroy_group(group=>$old_gid);
-	$self->renumber_groups();
+	# Take a window from the new group and put it in the old
+	# group if the old group would otherwise be empty.
+	# In other words, swap.
+	my $other_window = $self->remove_window_from_group(window=>'Any',
+							   group=>$new_gid);
+	$self->add_window_to_group(window=>$other_window,
+				   group=>$old_gid) if $other_window;
+
     }
     $self->add_window_to_group(window=>$window,
 			       group=>$new_gid);
@@ -520,9 +525,13 @@ sub move_window_to_prev_group {
     }
     if ($self->{groups}->{$old_gid}->num_windows() == 0)
     {
-	# If the group would be empty, destroy it.
-	$self->destroy_group(group=>$old_gid);
-	$self->renumber_groups();
+	# Take a window from the new group and put it in the old
+	# group if the old group would otherwise be empty.
+	# In other words, swap.
+	my $other_window = $self->remove_window_from_group(window=>'Any',
+							   group=>$new_gid);
+	$self->add_window_to_group(window=>$other_window,
+				   group=>$old_gid) if $other_window;
     }
     $self->add_window_to_group(window=>$window,
 			       group=>$new_gid);
