@@ -1,17 +1,283 @@
 #! /usr/bin/env perl
 =head1 NAME
 
-ptiler - Fvwm module for tiling windows
+FvwmPiazza - Fvwm module for tiling windows
 
 =head1 SYNOPSIS
 
-ptiler 
+FvwmPiazza 
 
 =head1 DESCRIPTION
 
-This tiles windows in different ways.
+This Fvwm module tiles windows in different ways; each "way" is called a layout.
+Layouts are applied on a per-desktop basis.
+
+=head2 Layouts
+
+Layouts can be set in two ways: as a default layout, or on the fly.
+
+A default layout is set in the config with a "LayoutN" directive.
+
+    *FvwmPiazza: Layout0 Full
+
+The above means that the default layout for desktop 0 is "Full".
+
+To set a layout on the fly, you must send a message to the module; this is most easily done
+by setting a hotkey command for it.
+
+    Key f		A	CM	SendToModule FvwmPiazza Full
+
+This will set the layout for the current desktop to "Full" when Alt-Ctrl-f is hit.
+
+=head3 Layout Types
+
+=over
+
+=item Columns
+
+    Columns I<cols>
+
+Windows are arranged in I<cols> columns.
+
+    Columns I<cols>,I<proportions>
+
+If a I<proportions> argument is given, this defines the proportions of the columns.
+For example, "Columns 2,60:40" will give the first column 60% of the space, and the
+second column 40% of the space.
+
+=item Full
+
+All windows are fullscreen.
+
+=item Grid
+
+    Grid I<grids>,I<cols>
+
+Windows are arranged in a grid of I<grids> squares, with I<cols> columns.
+Thus to get a 2x2 grid, the command is "Grid 4,2".
+
+=item Rows
+
+    Rows I<rows>
+
+Windows are arranged in I<rows> rows.
+
+    Rows I<rows>,I<proportions>
+
+If a I<proportions> argument is given, this defines the proportions of the rows.
+For example, "Rows 2,60:40" will give the first row 60% of the space, and the
+second row 40% of the space.
+
+=item Tall
+
+    Tall I<groups>
+
+Windows are arranged such that the first window is in one column, and the rest of the windows
+are in (I<groups> - 1) rows in the second column.
+
+    Tall I<groups>,Right
+
+If a second argument "Right" is given ("Tall 3,Right" for example) then the arrangement is
+a mirror-image, with the single-window column being on the right instead of the left.
+
+=item Wide
+
+    Wide I<groups>
+
+Windows are arranged such that the first window is in one row, and the rest of the windows
+are in (I<groups> - 1) columns in the second row.
+
+    Wide I<groups>,Bottom
+
+If a second argument "Bottom" is given ("Wide 3,Bottom" for example) then the arrangement is
+a mirror-image, with the single-window row being on the bottom instead of the top.
+
+=back
+
+=head2 Moving Windows
+
+Windows can be moved to the next or previous "group" (e.g. in the Column
+layout, that would be the next or previous column) with a keystroke.
+
+    Key Left	A	3S	Current (!CirculateHit) SendToModule FvwmPiazza PrevGroup
+    Key Right	A	3S	Current (!CirculateHit) SendToModule FvwmPiazza NextGroup
+
+The above bindings move a window to the previous group when Mod3-Shift-Left is hit,
+and to the next group when Mod3-Shift-Right is hit.
+
+Note that if you move a window directly with the mouse, FvwmPiazza will not notice,
+and will behave as if the window was still in the same group.
+
+=head2 Changing the number of Groups
+
+The number of "groups" in a layout can be increased or decreased on the fly.
+
+    Key less	A 	3S	SendToModule FvwmPiazza Decrement 1
+    Key greater	A 	3S	SendToModule FvwmPiazza Increment 1
+
+The above bindings decrease the number of groups if Mod3-Shift-less is hit,
+and increase the number of groups if Mod3-Shift-greater is hit.
+
+=head2 Other Config Settings
+
+=head3 Exclude
+
+This tells FvwmPiazza to ignore windows that match the given regex.
+
+    *FvwmPiazza: Exclude (Gweled|gnome-mastermind|PipeWalker|feh|pho)
+
+=head3 Struts
+
+This is needed if one has used a global EwmhBaseStruts command to restrict the "working" area.
+Unfortunately, FvwmPizza can't find out what those settings are, so you have to specifically
+tell the module what they are.
+
+    EwmhBaseStruts 0 70 24 0
+
+    *FvwmPiazza: Struts 0 70 24 0
+
+=head1 EXAMPLES
+
+=head2 Example Config
+
+    # =================================================================
+    # FvwmPiazza
+    # =================================================================
+    All (FvwmPiazza) Close
+    DestroyModuleConfig FvwmPiazza: *
+
+    *FvwmPiazza: Struts 0 70 24 0
+    *FvwmPiazza: Exclude (Gweled|gnome-mastermind|PipeWalker|feh|pho|Lurk)
+    *FvwmPiazza: Layout0 Full
+    *FvwmPiazza: Layout1 Tall 3
+    *FvwmPiazza: Layout2 Tall 3
+    *FvwmPiazza: Layout3 Full
+    *FvwmPiazza: Layout4 Tall 3
+    *FvwmPiazza: Layout5 Tall 3
+    *FvwmPiazza: Layout6 Tall 3
+    *FvwmPiazza: Layout7 Tall 3
+    *FvwmPiazza: Layout8 Full
+
+    Module FvwmPiazza
+
+    # Hotkeys
+    Key n		A	3	SendToModule FvwmPiazza "None"
+    Key f		A	3	SendToModule FvwmPiazza Full
+    Key t		A	3	SendToModule FvwmPiazza Tall 3
+    Key t		A	3S	SendToModule FvwmPiazza Tall 3,Right
+    Key c		A	3	SendToModule FvwmPiazza Columns 2
+    Key c		A	3S	SendToModule FvwmPiazza Columns 3,18:64:18
+    Key r		A	3	SendToModule FvwmPiazza Rows 2
+    Key r		A	3S	SendToModule FvwmPiazza Rows 2,66
+    Key w		A	3	SendToModule FvwmPiazza Wide 3
+    Key w		A	3S	SendToModule FvwmPiazza Wide 3,Bottom
+    Key g		A	3	SendToModule FvwmPiazza Grid 4,2
+    Key g		A	3S	SendToModule FvwmPiazza Grid 4,2,60,50
+
+    Key less	A 	3S	SendToModule FvwmPiazza Decrement 1
+    Key greater	A 	3S	SendToModule FvwmPiazza Increment 1
+
+    Key Left	A	3S	Current (!CirculateHit) SendToModule FvwmPiazza PrevGroup
+    Key Right	A	3S	Current (!CirculateHit) SendToModule FvwmPiazza NextGroup
+
+=head2 More Complex Example Config
+
+    # =================================================================
+    # FvwmPiazza
+    # =================================================================
+    All (FvwmPiazza) Close
+    DestroyModuleConfig FvwmPiazza: *
+
+    *FvwmPiazza: Struts 0 112 24 0
+    *FvwmPiazza: Exclude (Gweled|gnome-mastermind|PipeWalker|feh|pho|Lurk)
+    *FvwmPiazza: Layout0 Full
+    *FvwmPiazza: Layout1 Columns 3
+    *FvwmPiazza: Layout2 Grid 6,3
+    *FvwmPiazza: Layout3 Columns 2
+    *FvwmPiazza: Layout4 Columns 3
+    *FvwmPiazza: Layout5 Columns 3
+    *FvwmPiazza: Layout6 Full
+    *FvwmPiazza: Layout7 None
+
+    Module FvwmPiazza
+
+    # Hotkeys
+    Key n		A	3	SendToModule FvwmPiazza "None"
+    Key f		A	3	SendToModule FvwmPiazza Full
+
+    Key c		A	3	Popup FPMultiColumnMenu
+    Key r		A	3	Popup FPMultiRowMenu
+    Key w		A	3	Popup FPMultiWideMenu
+    Key t		A	3	Popup FPMultiTallMenu
+    Key g		A	3	Popup FPMultiGridMenu
+
+    Key Up		A 	3	SendToModule FvwmPiazza Increment 1
+    Key Down		A	3	SendToModule FvwmPiazza Decrement 1
+
+    Key Left		A	3S	Current (!CirculateHit) SendToModule FvwmPiazza PrevGroup
+    Key Right		A	3S	Current (!CirculateHit) SendToModule FvwmPiazza NextGroup
+
+    #------------------------------------------------------------------
+    # Functions
+
+    # Fake multi-keys by defining menus
+    DestroyMenu FPMultiColumnMenu
+    AddToMenu FPMultiColumnMenu
+    + "&2 Columns" SendToModule FvwmPiazza Columns 2
+    + "&3 Columns" SendToModule FvwmPiazza Columns 3
+    + "&4 Columns" SendToModule FvwmPiazza Columns 4
+
+    DestroyMenu FPMultiRowMenu
+    AddToMenu FPMultiRowMenu
+    + "&2 Rows" SendToModule FvwmPiazza Rows 2
+    + "&3 Rows" SendToModule FvwmPiazza Rows 3
+    + "&4 Rows" SendToModule FvwmPiazza Rows 4
+    + "&Two-Thirds Rows" SendToModule FvwmPiazza Rows 2,66
+
+    DestroyMenu FPMultiWideMenu
+    AddToMenu FPMultiWideMenu
+    + "&3 Wide" SendToModule FvwmPiazza Wide 3
+    + "&Bottom Wide 3" SendToModule FvwmPiazza Wide 3,Bottom
+    + "&4 Wide" SendToModule FvwmPiazza Wide 4
+    + "Bottom Wide 4" SendToModule FvwmPiazza Wide 4,Bottom
+    + "&5 Wide" SendToModule FvwmPiazza Wide 5
+
+    DestroyMenu FPMultiTallMenu
+    AddToMenu FPMultiTallMenu
+    + "&3 Tall" SendToModule FvwmPiazza Tall 3
+    + "&Right Tall 3" SendToModule FvwmPiazza Tall 3,Right
+    + "&4 Tall" SendToModule FvwmPiazza Tall 4
+    + "Right Tall 4" SendToModule FvwmPiazza Tall 4,Right
+    + "&5 Tall" SendToModule FvwmPiazza Tall 5
+
+    DestroyMenu FPMultiGridMenu
+    AddToMenu FPMultiGridMenu
+    + "&4 Grid" SendToModule FvwmPiazza Grid 4,2
+    + "&6 Grid" SendToModule FvwmPiazza Grid 6,3
+    + "&8 Grid" SendToModule FvwmPiazza Grid 8,4
+    + "&Gimp Layout" SendToModule FvwmPiazza Columns 3,14:72:14
+    + "&Two-Column Gimp Layout" SendToModule FvwmPiazza Columns 2,20
+    + "T&all Gimp Layout" SendToModule FvwmPiazza Tall 3,Right,20,50
+
+=head1 INSTALLATION
+
+=head2 Global
+
+    perl Build.PL
+    ./Build
+    sudo ./Build install
+
+=head2 Personal
+
+Since this module is only used by Fvwm, it makes equal sense to install it in your own .fvwm directory.
+
+    mkdir $HOME/.fvwm/modules
+    cp scripts/FvwmPiazza $HOME/.fvwm/modules
+    mkdir $HOME/.fvwm/perllib
+    cp -a lib/FvwmPiazza $HOME/.fvwm/perllib
 
 =cut
+
 use lib `fvwm-perllib dir`;
 
 use FvwmPiazza::Tiler;
