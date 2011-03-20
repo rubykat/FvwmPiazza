@@ -259,12 +259,18 @@ tell the module what they are.
     + "&Two-Column Gimp Layout" SendToModule FvwmPiazza Columns 2,20
     + "T&all Gimp Layout" SendToModule FvwmPiazza Tall 3,Right,20,50
 
+=head1 REQUIRES
+
+    FVWM::Module
+    Class::Base
+
 =head1 INSTALLATION
 
 =head2 Global
 
     perl Build.PL
     ./Build
+    ./Build test
     sudo ./Build install
 
 =head2 Personal
@@ -276,6 +282,21 @@ Since this module is only used by Fvwm, it makes equal sense to install it in yo
     mkdir $HOME/.fvwm/perllib
     cp -a lib/FvwmPiazza $HOME/.fvwm/perllib
 
+=head1 BUGS
+
+Please report any bugs or feature requests to the author.
+
+=head1 AUTHOR
+
+    Kathryn Andersen (RUBYKAT)
+    perlkat AT katspace dot org
+
+=head1 COPYRIGHT AND LICENCE
+
+Copyright (c) 2009-2011 by Kathryn Andersen
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
 =cut
 
 use lib `fvwm-perllib dir`;

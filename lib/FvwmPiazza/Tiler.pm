@@ -1044,11 +1044,10 @@ Please report any bugs or feature requests to the author.
 
     Kathryn Andersen (RUBYKAT)
     perlkat AT katspace dot org
-    http://www.katspace.com/tools/fvwm_tiler/
 
 =head1 COPYRIGHT AND LICENCE
 
-Copyright (c) 2009 by Kathryn Andersen
+Copyright (c) 2009-2011 by Kathryn Andersen
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
