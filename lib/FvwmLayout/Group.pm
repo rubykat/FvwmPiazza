@@ -1,14 +1,14 @@
-package FvwmPiazza::Group;
+package FvwmLayout::Group;
 use strict;
 use warnings;
 
 =head1 NAME
 
-FvwmPiazza::Group - FvwmPiazza class for grouping.
+FvwmLayout::Group - FvwmLayout class for grouping.
 
 =head1 SYNOPSIS
 
-    use base qw(FvwmPiazza::Group);
+    use base qw(FvwmLayout::Group);
 
 =head1 DESCRIPTION
 
@@ -78,7 +78,7 @@ sub add_window_to_group {
     else
     {
 	$wid = $args{window};
-	$window = FvwmPiazza::GroupWindow->new(ID=>$wid);
+	$window = FvwmLayout::GroupWindow->new(ID=>$wid);
     }
     $window->set_group(group=>$self->{GID});
     if (exists $self->{windows}->{$wid}

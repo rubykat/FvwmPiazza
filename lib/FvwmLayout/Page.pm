@@ -1,14 +1,14 @@
-package FvwmPiazza::Page;
+package FvwmLayout::Page;
 use strict;
 use warnings;
 
 =head1 NAME
 
-FvwmPiazza::Page - FvwmPiazza class for keeping track of page info.
+FvwmLayout::Page - FvwmLayout class for keeping track of page info.
 
 =head1 SYNOPSIS
 
-    use base qw(FvwmPiazza::Page);
+    use base qw(FvwmLayout::Page);
 
 =head1 DESCRIPTION
 
@@ -17,8 +17,8 @@ This module keeps track of information for one Fvwm page.
 =cut
 
 use lib `fvwm-perllib dir`;
-use FvwmPiazza::Group;
-use FvwmPiazza::GroupWindow;
+use FvwmLayout::Group;
+use FvwmLayout::GroupWindow;
 
 use base qw( Class::Base );
 
@@ -357,7 +357,7 @@ sub new_group {
     {
 	$gid++;
     }
-    $self->{groups}->{$gid} = FvwmPiazza::Group->new(GID=>$gid);
+    $self->{groups}->{$gid} = FvwmLayout::Group->new(GID=>$gid);
     return $gid;
 } # new_group
 
@@ -629,5 +629,5 @@ under the same terms as Perl itself.
 
 =cut
 
-1; # End of FvwmPiazza::Page
+1; # End of FvwmLayout::Page
 __END__

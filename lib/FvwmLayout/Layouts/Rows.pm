@@ -1,10 +1,10 @@
-package FvwmPiazza::Layouts::Rows;
+package FvwmLayout::Layouts::Rows;
 use strict;
 use warnings;
 
 =head1 NAME
 
-FvwmPiazza::Layouts::Rows - Rows layout.
+FvwmLayout::Layouts::Rows - Rows layout.
 
 =head1 SYNOPSIS
 
@@ -12,19 +12,19 @@ FvwmPiazza::Layouts::Rows - Rows layout.
 
 =head1 DESCRIPTION
 
-This defines the "Rows" layout for FvwmPiazza.
+This defines the "Rows" layout for FvwmLayout.
 
 =cut
 
 use lib `fvwm-perllib dir`;
 
 use FVWM::Module;
-use FvwmPiazza::Tiler;
-use FvwmPiazza::Page;
-use FvwmPiazza::Group;
-use FvwmPiazza::GroupWindow;
+use FvwmLayout::Tiler;
+use FvwmLayout::Page;
+use FvwmLayout::Group;
+use FvwmLayout::GroupWindow;
 
-use base qw( FvwmPiazza::Layouts );
+use base qw( FvwmLayout::Layouts );
 
 our $ERROR;
 our $DEBUG = 0 unless defined $DEBUG;
@@ -157,5 +157,5 @@ under the same terms as Perl itself.
 
 =cut
 
-1; # End of FvwmPiazza::Layouts
+1; # End of FvwmLayout::Layouts
 __END__

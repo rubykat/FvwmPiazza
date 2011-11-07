@@ -1,14 +1,14 @@
-package FvwmPiazza::GroupWindow;
+package FvwmLayout::GroupWindow;
 use strict;
 use warnings;
 
 =head1 NAME
 
-FvwmPiazza::GroupWindow - FvwmPiazza class for windows.
+FvwmLayout::GroupWindow - FvwmLayout class for windows.
 
 =head1 SYNOPSIS
 
-    use FvwmPiazza::GroupWindow;
+    use FvwmLayout::GroupWindow;
 
 =head1 DESCRIPTION
 

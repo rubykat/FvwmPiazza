@@ -1,10 +1,10 @@
-package FvwmPiazza::Layouts::Tall;
+package FvwmLayout::Layouts::Tall;
 use strict;
 use warnings;
 
 =head1 NAME
 
-FvwmPiazza::Layouts::Tall - Tall layout.
+FvwmLayout::Layouts::Tall - Tall layout.
 
 =head1 SYNOPSIS
 
@@ -12,7 +12,7 @@ FvwmPiazza::Layouts::Tall - Tall layout.
 
 =head1 DESCRIPTION
 
-This defines the "Tall" layout for FvwmPiazza.
+This defines the "Tall" layout for FvwmLayout.
 One "tall" column and the rest of the windows in the other column.
 
 =cut
@@ -20,12 +20,12 @@ One "tall" column and the rest of the windows in the other column.
 use lib `fvwm-perllib dir`;
 
 use FVWM::Module;
-use FvwmPiazza::Tiler;
-use FvwmPiazza::Page;
-use FvwmPiazza::Group;
-use FvwmPiazza::GroupWindow;
+use FvwmLayout::Tiler;
+use FvwmLayout::Page;
+use FvwmLayout::Group;
+use FvwmLayout::GroupWindow;
 
-use base qw( FvwmPiazza::Layouts );
+use base qw( FvwmLayout::Layouts );
 
 our $ERROR;
 our $DEBUG = 0 unless defined $DEBUG;
@@ -204,5 +204,5 @@ under the same terms as Perl itself.
 
 =cut
 
-1; # End of FvwmPiazza::Layouts
+1; # End of FvwmLayout::Layouts
 __END__
