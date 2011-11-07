@@ -9,7 +9,7 @@
 ^dist.ini$
 
 # distro files
-^FvwmPiazza-*
+^FvwmLayout-*
 
 # ExtUtils::MakeMaker generated files and dirs.
 ^Makefile$
