@@ -187,11 +187,13 @@ sub process_args ($) {
 	       'exclude=s',
 	       'include=s',
 	       'action=s',
+	       'maximize!',
 	       'rows=i',
 	       'cols=i',
 	       'maxwin=i',
 	       'ratios=s',
 	       'variant=s',
+	       'options=s',
 	      ) or pod2usage(2);
 
     if ($opts->{'manpage'})

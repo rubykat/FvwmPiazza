@@ -83,6 +83,7 @@ sub init {
 	$self->debug("Layout: " . ref $lay);
 	$self->{Layouts}->{$lay->name()} = $lay;
 	$self->{Layouts}->{$lay->name()}->{VIEWPORT_POS_BUG} = 1;
+	$self->{Layouts}->{$lay->name()}->{maximize} = $self->{maximize};
     }
 
     $self->add_handler(M_WINDOW_NAME, sub {
@@ -187,15 +188,6 @@ sub apply_tiling {
     my $layout = $args{layout};
     $self->debug("layout=$layout : $args{args}");
 
-    my $max_win = 1;
-    if ($self->{maxwin})
-    {
-	$max_win = $self->{maxwin};
-    }
-
-    $max_win = 2 if !$max_win;
-    $max_win = 1 if $layout eq 'Full';
-
     #
     # "None" will clear layouts
     #
@@ -216,11 +208,12 @@ sub apply_tiling {
 	$self->{Layouts}->{$layout}->apply_layout(
 	    area=>$page_info,
 	    work_area=>\%work_area,
-	    max_win=>$max_win,
+	    max_win=>$self->{maxwin},
 	    rows=>$self->{rows},
 	    cols=>$self->{cols},
 	    ratios=>$self->{ratios},
 	    variant=>$self->{variant},
+	    options=>$self->{options},
 	    tiler=>$self,
 	);
     }

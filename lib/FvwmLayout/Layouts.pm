@@ -135,7 +135,14 @@ sub arrange_window {
     );
     # Even though we are calling this by window-id, add the window-id condition
     # to prevent a race condition (i hope)
-    my $msg = "WindowId " . $args{wid} . " (Maximizable) ResizeMoveMaximize frame $args{width}p $args{height}p $args{x}p $args{y}p";
+    my $msg = sprintf("WindowId %s (Maximizable) %s frame %dp %dp %dp %dp",
+	$args{wid},
+	($self->{maximize} ? 'ResizeMoveMaximize' : 'ResizeMove'),
+	$args{width},
+	$args{height},
+	$args{x},
+	$args{y},
+    );
     $args{module}->debug($msg);
     $args{module}->send($msg, $args{wid});
 } # arrange_window

@@ -83,7 +83,12 @@ sub apply_layout {
     my $working_height = $work_area->{wa_height};
 
     my $num_win = $area->num_windows();
-    my $max_win = $args{max_win};
+    my $max_win = ($args{max_win} ? $args{max_win}
+	: ($args{cols} and $args{rows}
+	    ? ($args{cols} * $args{rows})
+	    : $num_cols
+	)
+    );
 
     if ($num_win == 0)
     {
@@ -92,12 +97,16 @@ sub apply_layout {
     $num_cols = 1 if $num_win == 1;
 
     # adjust the max-win if we have few windows
+    my $fewer = 0;
     if ($num_win < $max_win)
     {
 	$max_win = $num_win + ($num_win % $num_cols);
+	$fewer = 1;
     }
 
-    my $num_rows = int($max_win / $num_cols);
+    my $num_rows = ($args{rows}
+	? $args{rows}
+	: int($max_win / $num_cols));
 
     # Calculate the width and height ratios
     my @width_ratios =
@@ -126,7 +135,7 @@ sub apply_layout {
 	# decrease the number of rows
 	if ($windows_left <= ($num_cols - $col_nr)
 		and $row_nr == 0
-		and $num_win < $args{max_win})
+		and $fewer)
 	{
 	    $num_rows = 1;
 	    $row_height = $working_height;

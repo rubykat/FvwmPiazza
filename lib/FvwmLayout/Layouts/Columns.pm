@@ -74,23 +74,26 @@ sub apply_layout {
     my $working_width = $work_area->{wa_width};
     my $working_height = $work_area->{wa_height};
 
-    my $num_cols = $args{max_win};
+    my $num_cols = ($args{max_win} ? $args{max_win}
+	: ($args{cols} ? $args{cols} : 2));
     my $num_win = $area->num_windows();
 
     if ($num_win == 0)
     {
 	return $self->error("there are zero windows");
     }
+    my $fewer = 0;
     if ($num_win < $num_cols)
     {
 	$num_cols = $num_win;
+	$fewer = 1;
     }
     
     # Calculate the column widths
     # Don't apply the passed-in ratios if we have fewer columns
     # than the layout requires
     my @ratios = ();
-    if ($num_cols == $args{max_win} and defined $args{ratios})
+    if (!$fewer and defined $args{ratios})
     {
 	@ratios = $self->calculate_ratios(num_sets=>$num_cols,
 	    ratios=>$args{ratios});
