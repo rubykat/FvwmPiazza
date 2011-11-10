@@ -108,6 +108,38 @@ sub calculate_ratios {
     return @ratios;
 } # calculate_ratios
 
+=head2 arrange_window
+
+Resize and move a window
+
+$self->arrange_window(
+wid=>$wid,
+x=>$xpos,
+y=>$ypos,
+width=>$width,
+height=>$height,
+module=>$mod_ref,
+);
+
+=cut
+sub arrange_window {
+    my $self = shift;
+    my %args = (
+	wid=>undef,
+	x=>undef,
+	y=>undef,
+	width=>undef,
+	height=>undef,
+	module=>undef,
+	@_
+    );
+    # Even though we are calling this by window-id, add the window-id condition
+    # to prevent a race condition (i hope)
+    my $msg = "WindowId " . $args{wid} . " (Maximizable) ResizeMoveMaximize frame $args{width}p $args{height}p $args{x}p $args{y}p";
+    $args{module}->debug($msg);
+    $args{module}->send($msg, $args{wid});
+} # arrange_window
+
 =head1 REQUIRES
 
     Class::Base

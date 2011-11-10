@@ -22,8 +22,6 @@ use lib `fvwm-perllib dir`;
 use FVWM::Module;
 use FvwmLayout::Tiler;
 use FvwmLayout::Page;
-use FvwmLayout::Group;
-use FvwmLayout::GroupWindow;
 
 use base qw( FvwmLayout::Layouts );
 
@@ -52,13 +50,8 @@ sub apply_layout {
     my $self = shift;
     my %args = (
 		area=>undef,
+		work_area=>undef,
 		options=>[],
-		left_offset=>0,
-		right_offset=>0,
-		top_offset=>0,
-		bottom_offset=>0,
-		vp_width=>0,
-		vp_heigt=>0,
 		max_win=>2,
 		tiler=>undef,
 		@_
@@ -67,25 +60,20 @@ sub apply_layout {
     {
 	return $self->error("area not defined");
     }
+    if (!defined $args{work_area})
+    {
+	return $self->error("work_area not defined");
+    }
     if (!defined $args{tiler})
     {
 	return $self->error("tiler not defined");
     }
-    if ($args{vp_width} == 0)
-    {
-	return $self->error("vp_width is zero");
-    }
-    if ($args{vp_height} == 0)
-    {
-	return $self->error("vp_height is zero");
-    }
     my $area = $args{area};
+    my $work_area = $args{work_area};
     my @options = @{$args{options}};
 
-    my $working_width = $args{vp_width} -
-	($args{left_offset} + $args{right_offset});
-    my $working_height = $args{vp_height} -
-	($args{top_offset} + $args{bottom_offset});
+    my $working_width = $work_area->{wa_width};
+    my $working_height = $work_area->{wa_height};
 
     my $num_win = $area->num_windows();
     my $max_win = $args{max_win};
@@ -105,11 +93,6 @@ sub apply_layout {
     if ($num_win < $max_win)
     {
 	$max_win = $num_win;
-	$area->redistribute_windows(n_groups=>$max_win);
-    }
-    elsif ($area->num_groups() != $max_win)
-    {
-	$area->redistribute_windows(n_groups=>$max_win);
     }
     my $num_rows = $max_win - 1;
     $num_rows = 1 if $num_rows <= 0;
@@ -122,31 +105,38 @@ sub apply_layout {
 
     my $col_nr = 0;
     my $row_nr = 0;
-    my $ypos = $args{top_offset};
-    my $xpos = $args{left_offset};
-    for (my $gnr=0; $gnr < $max_win; $gnr++)
+    my $xpos = 0;
+    my $ypos = 0;
+    if (!$self->{VIEWPORT_POS_BUG})
     {
+	$xpos = $work_area->{wa_x};
+	$ypos = $work_area->{wa_y};
+    }
+    for (my $i=0; $i < $area->num_windows(); $i++)
+    {
+	my $win = $area->window($i);
 	my $col_width = int($working_width * $width_ratios[$col_nr]);
 	my $row_height = int($working_height * $height_ratios[$row_nr]);
-	my $group = $area->group($gnr);
 
 	if ($col_nr == $tall_col_nr)
 	{
-	    $group->arrange_group(module=>$args{tiler},
-				  x=>$xpos,
-				  y=>$args{top_offset},
-				  width=>$col_width,
-				  height=>$working_height);
+	    $self->arrange_window(module=>$args{tiler},
+		wid=>$win->{id},
+		x=>$xpos,
+		y=>($self->{VIEWPORT_POS_BUG} ? 0 : $work_area->{wa_y}),
+		width=>$col_width,
+		height=>$working_height);
 	    $args{tiler}
 	    ->debug("tall_col_nr=$tall_col_nr col_width=$col_width");
 	}
 	else
 	{
-	    $group->arrange_group(module=>$args{tiler},
-				  x=>$xpos,
-				  y=>$ypos,
-				  width=>$col_width,
-				  height=>$row_height);
+	    $self->arrange_window(module=>$args{tiler},
+		wid=>$win->{id},
+		x=>$xpos,
+		y=>$ypos,
+		width=>$col_width,
+		height=>$row_height);
 	    $args{tiler}
 	    ->debug("col=$col_nr, row=$row_nr, xpos=$xpos, ypos=$ypos");
 	}
@@ -155,7 +145,7 @@ sub apply_layout {
 	{
 	    $col_nr++;
 	    $row_nr = 0;
-	    $ypos = $args{top_offset};
+	    $ypos = ($self->{VIEWPORT_POS_BUG} ? 0 : $work_area->{wa_y});
 	    $xpos += $col_width;
 	}
 	else
@@ -165,7 +155,7 @@ sub apply_layout {
 	    if ($row_nr == $num_rows)
 	    {
 		$row_nr = 0;
-		$ypos = $args{top_offset};
+		$ypos = ($self->{VIEWPORT_POS_BUG} ? 0 : $work_area->{wa_y});
 		$col_nr++;
 		$xpos += $col_width;
 	    }
@@ -174,8 +164,8 @@ sub apply_layout {
 	{
 	    $col_nr = 0;
 	    $row_nr = 0;
-	    $xpos = $args{left_offset};
-	    $ypos = $args{top_offset};
+	    $xpos = ($self->{VIEWPORT_POS_BUG} ? 0 : $work_area->{wa_x});
+	    $ypos = ($self->{VIEWPORT_POS_BUG} ? 0 : $work_area->{wa_y});
 	}
     }
 

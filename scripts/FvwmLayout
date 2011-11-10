@@ -14,18 +14,10 @@ Layouts are applied on a per-desktop basis.
 
 =head2 Layouts
 
-Layouts can be set in two ways: as a default layout, or on the fly.
-
-A default layout is set in the config with a "LayoutN" directive.
-
-    *FvwmLayout: Layout0 Full
-
-The above means that the default layout for desktop 0 is "Full".
-
-To set a layout on the fly, you must send a message to the module; this is most easily done
+To set a layout you must send a message to the module; this is most easily done
 by setting a hotkey command for it.
 
-    Key f		A	CM	SendToModule FvwmLayout Full
+    Key f		A	CM	FvwmLayout Full
 
 This will set the layout for the current desktop to "Full" when Alt-Ctrl-f is hit.
 
@@ -94,48 +86,6 @@ a mirror-image, with the single-window row being on the bottom instead of the to
 
 =back
 
-=head2 Moving Windows
-
-Windows can be moved to the next or previous "group" (e.g. in the Column
-layout, that would be the next or previous column) with a keystroke.
-
-    Key Left	A	3S	Current (!CirculateHit) SendToModule FvwmLayout PrevGroup
-    Key Right	A	3S	Current (!CirculateHit) SendToModule FvwmLayout NextGroup
-
-The above bindings move a window to the previous group when Mod3-Shift-Left is hit,
-and to the next group when Mod3-Shift-Right is hit.
-
-Note that if you move a window directly with the mouse, FvwmLayout will not notice,
-and will behave as if the window was still in the same group.
-
-=head2 Changing the number of Groups
-
-The number of "groups" in a layout can be increased or decreased on the fly.
-
-    Key less	A 	3S	SendToModule FvwmLayout Decrement 1
-    Key greater	A 	3S	SendToModule FvwmLayout Increment 1
-
-The above bindings decrease the number of groups if Mod3-Shift-less is hit,
-and increase the number of groups if Mod3-Shift-greater is hit.
-
-=head2 Other Config Settings
-
-=head3 Exclude
-
-This tells FvwmLayout to ignore windows that match the given regex.
-
-    *FvwmLayout: Exclude (Gweled|gnome-mastermind|PipeWalker|feh|pho)
-
-=head3 Struts
-
-This is needed if one has used a global EwmhBaseStruts command to restrict the "working" area.
-Unfortunately, FvwmPizza can't find out what those settings are, so you have to specifically
-tell the module what they are.
-
-    EwmhBaseStruts 0 70 24 0
-
-    *FvwmLayout: Struts 0 70 24 0
-
 =head1 EXAMPLES
 
 =head2 Example Config
@@ -143,126 +93,26 @@ tell the module what they are.
     # =================================================================
     # FvwmLayout
     # =================================================================
-    All (FvwmLayout) Close
-    DestroyModuleConfig FvwmLayout: *
-
-    *FvwmLayout: Struts 0 70 24 0
-    *FvwmLayout: Exclude (Gweled|gnome-mastermind|PipeWalker|feh|pho|Lurk)
-    *FvwmLayout: Layout0 Full
-    *FvwmLayout: Layout1 Tall 3
-    *FvwmLayout: Layout2 Tall 3
-    *FvwmLayout: Layout3 Full
-    *FvwmLayout: Layout4 Tall 3
-    *FvwmLayout: Layout5 Tall 3
-    *FvwmLayout: Layout6 Tall 3
-    *FvwmLayout: Layout7 Tall 3
-    *FvwmLayout: Layout8 Full
-
-    Module FvwmLayout
 
     # Hotkeys
-    Key n		A	3	SendToModule FvwmLayout "None"
-    Key f		A	3	SendToModule FvwmLayout Full
-    Key t		A	3	SendToModule FvwmLayout Tall 3
-    Key t		A	3S	SendToModule FvwmLayout Tall 3,Right
-    Key c		A	3	SendToModule FvwmLayout Columns 2
-    Key c		A	3S	SendToModule FvwmLayout Columns 3,18:64:18
-    Key r		A	3	SendToModule FvwmLayout Rows 2
-    Key r		A	3S	SendToModule FvwmLayout Rows 2,66
-    Key w		A	3	SendToModule FvwmLayout Wide 3
-    Key w		A	3S	SendToModule FvwmLayout Wide 3,Bottom
-    Key g		A	3	SendToModule FvwmLayout Grid 4,2
-    Key g		A	3S	SendToModule FvwmLayout Grid 4,2,60,50
-
-    Key less	A 	3S	SendToModule FvwmLayout Decrement 1
-    Key greater	A 	3S	SendToModule FvwmLayout Increment 1
-
-    Key Left	A	3S	Current (!CirculateHit) SendToModule FvwmLayout PrevGroup
-    Key Right	A	3S	Current (!CirculateHit) SendToModule FvwmLayout NextGroup
-
-=head2 More Complex Example Config
-
-    # =================================================================
-    # FvwmLayout
-    # =================================================================
-    All (FvwmLayout) Close
-    DestroyModuleConfig FvwmLayout: *
-
-    *FvwmLayout: Struts 0 112 24 0
-    *FvwmLayout: Exclude (Gweled|gnome-mastermind|PipeWalker|feh|pho|Lurk)
-    *FvwmLayout: Layout0 Full
-    *FvwmLayout: Layout1 Columns 3
-    *FvwmLayout: Layout2 Grid 6,3
-    *FvwmLayout: Layout3 Columns 2
-    *FvwmLayout: Layout4 Columns 3
-    *FvwmLayout: Layout5 Columns 3
-    *FvwmLayout: Layout6 Full
-    *FvwmLayout: Layout7 None
-
-    Module FvwmLayout
-
-    # Hotkeys
-    Key n		A	3	SendToModule FvwmLayout "None"
-    Key f		A	3	SendToModule FvwmLayout Full
-
-    Key c		A	3	Popup FPMultiColumnMenu
-    Key r		A	3	Popup FPMultiRowMenu
-    Key w		A	3	Popup FPMultiWideMenu
-    Key t		A	3	Popup FPMultiTallMenu
-    Key g		A	3	Popup FPMultiGridMenu
-
-    Key Up		A 	3	SendToModule FvwmLayout Increment 1
-    Key Down		A	3	SendToModule FvwmLayout Decrement 1
-
-    Key Left		A	3S	Current (!CirculateHit) SendToModule FvwmLayout PrevGroup
-    Key Right		A	3S	Current (!CirculateHit) SendToModule FvwmLayout NextGroup
-
-    #------------------------------------------------------------------
-    # Functions
-
-    # Fake multi-keys by defining menus
-    DestroyMenu FPMultiColumnMenu
-    AddToMenu FPMultiColumnMenu
-    + "&2 Columns" SendToModule FvwmLayout Columns 2
-    + "&3 Columns" SendToModule FvwmLayout Columns 3
-    + "&4 Columns" SendToModule FvwmLayout Columns 4
-
-    DestroyMenu FPMultiRowMenu
-    AddToMenu FPMultiRowMenu
-    + "&2 Rows" SendToModule FvwmLayout Rows 2
-    + "&3 Rows" SendToModule FvwmLayout Rows 3
-    + "&4 Rows" SendToModule FvwmLayout Rows 4
-    + "&Two-Thirds Rows" SendToModule FvwmLayout Rows 2,66
-
-    DestroyMenu FPMultiWideMenu
-    AddToMenu FPMultiWideMenu
-    + "&3 Wide" SendToModule FvwmLayout Wide 3
-    + "&Bottom Wide 3" SendToModule FvwmLayout Wide 3,Bottom
-    + "&4 Wide" SendToModule FvwmLayout Wide 4
-    + "Bottom Wide 4" SendToModule FvwmLayout Wide 4,Bottom
-    + "&5 Wide" SendToModule FvwmLayout Wide 5
-
-    DestroyMenu FPMultiTallMenu
-    AddToMenu FPMultiTallMenu
-    + "&3 Tall" SendToModule FvwmLayout Tall 3
-    + "&Right Tall 3" SendToModule FvwmLayout Tall 3,Right
-    + "&4 Tall" SendToModule FvwmLayout Tall 4
-    + "Right Tall 4" SendToModule FvwmLayout Tall 4,Right
-    + "&5 Tall" SendToModule FvwmLayout Tall 5
-
-    DestroyMenu FPMultiGridMenu
-    AddToMenu FPMultiGridMenu
-    + "&4 Grid" SendToModule FvwmLayout Grid 4,2
-    + "&6 Grid" SendToModule FvwmLayout Grid 6,3
-    + "&8 Grid" SendToModule FvwmLayout Grid 8,4
-    + "&Gimp Layout" SendToModule FvwmLayout Columns 3,14:72:14
-    + "&Two-Column Gimp Layout" SendToModule FvwmLayout Columns 2,20
-    + "T&all Gimp Layout" SendToModule FvwmLayout Tall 3,Right,20,50
+    Key n		A	3	FvwmLayout "None"
+    Key f		A	3	FvwmLayout Full
+    Key t		A	3	FvwmLayout Tall 3
+    Key t		A	3S	FvwmLayout Tall 3,Right
+    Key c		A	3	FvwmLayout Columns 2
+    Key c		A	3S	FvwmLayout Columns 3,18:64:18
+    Key r		A	3	FvwmLayout Rows 2
+    Key r		A	3S	FvwmLayout Rows 2,66
+    Key w		A	3	FvwmLayout Wide 3
+    Key w		A	3S	FvwmLayout Wide 3,Bottom
+    Key g		A	3	FvwmLayout Grid 4,2
+    Key g		A	3S	FvwmLayout Grid 4,2,60,50
 
 =head1 REQUIRES
 
     FVWM::Module
     Class::Base
+    Module::Pluggable
 
 =head1 INSTALLATION
 
@@ -302,17 +152,65 @@ under the same terms as Perl itself.
 use lib `fvwm-perllib dir`;
 
 use FvwmLayout::Tiler;
+use Getopt::Long 2.34;
+use Pod::Usage;
+use File::Basename;
 
 #========================================================
 # Subroutines
+
+sub process_args ($) {
+    my $opts = shift;
+
+    my $ok = 1;
+
+    # check the rc file if we can
+    if (eval("require Getopt::ArgvFile")) {
+	my $nameBuilder=sub
+	{
+	    my $bn = basename($_[0], '');
+	    [".${bn}rc", ".${bn}/config", ".config/${bn}/config"];
+	};
+	Getopt::ArgvFile::argvFile(
+				   startupFilename=>$nameBuilder,
+				   home=>1,
+				   current=>1);
+    }
+
+    pod2usage(2) unless @ARGV;
+
+    my $op = new Getopt::Long::Parser;
+    $op->configure(qw(auto_version auto_help));
+    $op->getoptions($opts,
+	       'verbose!',
+	       'manpage',
+	       'exclude=s',
+	       'action=s',
+	       'options=s',
+	      ) or pod2usage(2);
+
+    if ($opts->{'manpage'})
+    {
+	pod2usage({ -message => "$0 version $VERSION",
+		    -exitval => 0,
+		    -verbose => 2,
+	    });
+    }
+
+    # we need an action argument also
+    pod2usage(2) unless @ARGV;
+
+} # process_args
 
 #========================================================
 # Main
 
 MAIN:
 {
-    my $tiler = new FvwmLayout::Tiler();
+    my %data = ();
+    process_args(\%data);
+
+    my $tiler = FvwmLayout::Tiler->new(%data);
 
     $tiler->start();
-
 }

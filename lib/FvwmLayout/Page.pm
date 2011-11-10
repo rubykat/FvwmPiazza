@@ -68,13 +68,31 @@ How many windows?
 sub num_windows {
     my $self = shift;
 
-    my $num = 0;
-    foreach my $gid (sort keys %{$self->{groups}})
-    {
-	$num += $self->{groups}->{$gid}->num_windows();
-    }
+    my $num = int (@{$self->{windows}});
     return $num;
 } # num_windows
+
+=head2 window
+
+Return the given window.
+$grp = $self->window($index);
+
+=cut
+sub window {
+    my $self = shift;
+    my $ind = shift;
+
+    if (!@{$self->{windows}})
+    {
+	return $self->error("No windows");
+    }
+    if ($ind >= @{$self->{windows}} or $ind < 0)
+    {
+	return $self->error("Index $ind out of range");
+    }
+    my $win = $self->{windows}[$ind];
+    return $win;
+} # window
 
 =head2 group
 
