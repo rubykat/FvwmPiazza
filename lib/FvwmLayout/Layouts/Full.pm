@@ -22,8 +22,6 @@ use lib `fvwm-perllib dir`;
 use FVWM::Module;
 use FvwmLayout::Tiler;
 use FvwmLayout::Page;
-use FvwmLayout::Group;
-use FvwmLayout::GroupWindow;
 use YAML::Any;
 
 use base qw( FvwmLayout::Layouts );

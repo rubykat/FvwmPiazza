@@ -27,8 +27,6 @@ use Getopt::Long qw(GetOptionsFromArray);
 use General::Parse;
 use YAML::Any;
 use FvwmLayout::Page;
-use FvwmLayout::Group;
-use FvwmLayout::GroupWindow;
 
 use base qw( FVWM::Module );
 
@@ -53,7 +51,7 @@ sub new {
 	Name => "FvwmLayout",
 	Mask => M_STRING | M_WINDOW_NAME | M_END_WINDOWLIST,
 	EnableAlias => 0,
-	Debug => 1,
+	Debug => 0,
 	);
     bless $self, $class;
 
@@ -281,29 +279,10 @@ sub get_current_page_data {
 	{
 	    my $pwin = $page_windows{$wid};
 	    $self->debug("==== $wid - '" .  $pwin->{name} . "'");
-#	    my $new_window = FvwmLayout::GroupWindow
-#	    ->new(ID=>$wid,
-#		X=>$pwin->{x},
-#		Y=>$pwin->{y},
-#		WIDTH=>$pwin->{width},
-#		HEIGHT=>$pwin->{height},
-#		DESK=>$pwin->{desk},
-#		PAGEX=>$pwin->{page_nx},
-#		PAGEY=>$pwin->{page_ny},
-#		WINDOW=>$pwin,
-#	    );
-#	    push @windows, $new_window;
 	    push @windows, $pwin;
 	}
     }
     $page_data->{windows} = \@windows;
-#    if (@windows
-#	    and !defined $page_data
-#	->windows_to_n_groups(window_list=>\@windows, n_groups=>1))
-#    {
-#	$self->debug("get_current_page_data ($desk_n/$pagex/$pagey) error: "
-#	    . FvwmLayout::Page->error());
-#    }
     return $page_data;
 } # get_current_page_data
 
@@ -338,11 +317,6 @@ sub check_interest {
     {
 	$window = $args{window};
 	$wid = $window->{id};
-    }
-    elsif (ref $args{window} eq "FvwmLayout::GroupWindow")
-    {
-	$window = $args{window};
-	$wid = $window->{ID};
     }
     my $interest = 1;
     my $include = $self->{include};
