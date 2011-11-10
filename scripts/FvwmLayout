@@ -17,7 +17,7 @@ Layouts are applied on a per-desktop basis.
 To set a layout you must send a message to the module; this is most easily done
 by setting a hotkey command for it.
 
-    Key f		A	CM	FvwmLayout Full
+    Key f		A	CM	FvwmLayout --action Full
 
 This will set the layout for the current desktop to "Full" when Alt-Ctrl-f is hit.
 
@@ -95,18 +95,18 @@ a mirror-image, with the single-window row being on the bottom instead of the to
     # =================================================================
 
     # Hotkeys
-    Key n		A	3	FvwmLayout "None"
-    Key f		A	3	FvwmLayout Full
-    Key t		A	3	FvwmLayout Tall 3
-    Key t		A	3S	FvwmLayout Tall 3,Right
-    Key c		A	3	FvwmLayout Columns 2
-    Key c		A	3S	FvwmLayout Columns 3,18:64:18
-    Key r		A	3	FvwmLayout Rows 2
-    Key r		A	3S	FvwmLayout Rows 2,66
-    Key w		A	3	FvwmLayout Wide 3
-    Key w		A	3S	FvwmLayout Wide 3,Bottom
-    Key g		A	3	FvwmLayout Grid 4,2
-    Key g		A	3S	FvwmLayout Grid 4,2,60,50
+    Key n		A	3	FvwmLayout --action "None"
+    Key f		A	3	FvwmLayout --action Full
+    Key t		A	3	FvwmLayout --action Tall 3
+    Key t		A	3S	FvwmLayout --action Tall 3,Right
+    Key c		A	3	FvwmLayout --action Columns 2
+    Key c		A	3S	FvwmLayout --action Columns 3,18:64:18
+    Key r		A	3	FvwmLayout --action Rows 2
+    Key r		A	3S	FvwmLayout --action Rows 2,66
+    Key w		A	3	FvwmLayout --action Wide 3
+    Key w		A	3S	FvwmLayout --action Wide 3,Bottom
+    Key g		A	3	FvwmLayout --action Grid 4,2
+    Key g		A	3S	FvwmLayout --action Grid 4,2,60,50
 
 =head1 REQUIRES
 
@@ -185,8 +185,13 @@ sub process_args ($) {
 	       'verbose!',
 	       'manpage',
 	       'exclude=s',
+	       'include=s',
 	       'action=s',
-	       'options=s',
+	       'rows=i',
+	       'cols=i',
+	       'maxwin=i',
+	       'ratios=s',
+	       'variant=s',
 	      ) or pod2usage(2);
 
     if ($opts->{'manpage'})
@@ -196,9 +201,6 @@ sub process_args ($) {
 		    -verbose => 2,
 	    });
     }
-
-    # we need an action argument also
-    pod2usage(2) unless @ARGV;
 
 } # process_args
 

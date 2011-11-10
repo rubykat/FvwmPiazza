@@ -23,7 +23,6 @@ This tiles windows in different ways.
 use lib `fvwm-perllib dir`;
 
 use FVWM::Module;
-use Getopt::Long qw(GetOptionsFromArray);
 use General::Parse;
 use YAML::Any;
 use FvwmLayout::Page;
@@ -51,7 +50,7 @@ sub new {
 	Name => "FvwmLayout",
 	Mask => M_STRING | M_WINDOW_NAME | M_END_WINDOWLIST,
 	EnableAlias => 0,
-	Debug => 0,
+	Debug => 1,
 	);
     bless $self, $class;
 
@@ -151,8 +150,7 @@ sub handle_end_windowlist {
     my $self = shift;
     my $event = shift;
 
-    $self->apply_tiling(layout=>$self->{action},
-	args=>$self->{options});
+    $self->apply_tiling(layout=>$self->{action});
 
     # We're done!
     # Terminate itself after 1 second
@@ -188,31 +186,15 @@ sub apply_tiling {
 
     my $layout = $args{layout};
     $self->debug("layout=$layout : $args{args}");
-    my @options = ();
-    if ($args{args})
-    {
-	@options = split(',', $args{args});
-    }
 
     my $max_win = 1;
-    if (defined $options[0] and $options[0] =~ /(\d+)/)
+    if ($self->{maxwin})
     {
-	$max_win = $1;
-	shift @options;
+	$max_win = $self->{maxwin};
     }
 
     $max_win = 2 if !$max_win;
     $max_win = 1 if $layout eq 'Full';
-
-#    if ($page_info->num_groups() == 0
-#	or $page_info->num_windows() == 0)
-#    {
-#	# no groups, no windows, remember the args and return
-#	$page_info->{LAYOUT} = $layout;
-#	$page_info->{MAX_WIN} = $max_win;
-#	$page_info->{OPTIONS} = \@options;
-#	return 1;
-#    }
 
     #
     # "None" will clear layouts
@@ -220,7 +202,7 @@ sub apply_tiling {
     if (($layout eq 'None'))
     {
 	$self
-	->postponeSend("All (CurrentPage, Maximizable) Maximize False");
+	->send("All (CurrentPage, Maximizable) Maximize False");
 
 	return 1;
     }
@@ -231,12 +213,14 @@ sub apply_tiling {
     if (exists $self->{Layouts}->{$layout}
 	and defined $self->{Layouts}->{$layout})
     {
-	$self->{Layouts}->{$layout}
-	->apply_layout(
+	$self->{Layouts}->{$layout}->apply_layout(
 	    area=>$page_info,
 	    work_area=>\%work_area,
 	    max_win=>$max_win,
-	    options=>\@options,
+	    rows=>$self->{rows},
+	    cols=>$self->{cols},
+	    ratios=>$self->{ratios},
+	    variant=>$self->{variant},
 	    tiler=>$self,
 	);
     }

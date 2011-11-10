@@ -52,7 +52,6 @@ sub apply_layout {
     my %args = (
 		area=>undef,
 		work_area=>undef,
-		options=>[],
 		max_win=>1,
 		tiler=>undef,
 		@_
@@ -72,7 +71,6 @@ sub apply_layout {
     $args{tiler}->debug("in Full apply_layout");
     my $area = $args{area};
     my $work_area = $args{work_area};
-    my @options = @{$args{options}};
 
     my $working_width = $work_area->{wa_width};
     my $working_height = $work_area->{wa_height};
@@ -80,8 +78,8 @@ sub apply_layout {
     my $max_win = $args{max_win};
     my $num_win = $area->num_windows();
 
-    $args{tiler}->debug("options=" . join(":", @options)
-	. " working_width=$working_width"
+    $args{tiler}->debug(
+	" working_width=$working_width"
 	. " working_height=$working_height"
 	. " max_win=$max_win"
 	. " num_win=$num_win"

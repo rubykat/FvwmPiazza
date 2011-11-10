@@ -52,7 +52,6 @@ sub apply_layout {
     my %args = (
 		area=>undef,
 		work_area=>undef,
-		options=>[],
 		max_win=>2,
 		tiler=>undef,
 		@_
@@ -71,7 +70,6 @@ sub apply_layout {
     }
     my $area = $args{area};
     my $work_area = $args{work_area};
-    my @options = @{$args{options}};
 
     my $working_width = $work_area->{wa_width};
     my $working_height = $work_area->{wa_height};
@@ -92,10 +90,10 @@ sub apply_layout {
     # Don't apply the passed-in ratios if we have fewer columns
     # than the layout requires
     my @ratios = ();
-    if ($num_cols == $args{max_win} and defined $options[0])
+    if ($num_cols == $args{max_win} and defined $args{ratios})
     {
 	@ratios = $self->calculate_ratios(num_sets=>$num_cols,
-	    ratios=>$options[0]);
+	    ratios=>$args{ratios});
     }
     else
     {

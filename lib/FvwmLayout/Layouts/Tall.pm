@@ -51,7 +51,6 @@ sub apply_layout {
     my %args = (
 		area=>undef,
 		work_area=>undef,
-		options=>[],
 		max_win=>2,
 		tiler=>undef,
 		@_
@@ -70,7 +69,6 @@ sub apply_layout {
     }
     my $area = $args{area};
     my $work_area = $args{work_area};
-    my @options = @{$args{options}};
 
     my $working_width = $work_area->{wa_width};
     my $working_height = $work_area->{wa_height};
@@ -84,10 +82,16 @@ sub apply_layout {
     }
     my $num_cols = 2;
     $num_cols = 1 if $num_win == 1;
-    my $tall_style = (@options ? shift @options : '');
+    my $tall_style = ($args{variant} ? $args{variant} : '');
     my $tall_col_nr = ($tall_style =~ /Right/i ? 1 : 0);
-    my $width_ratio = (@options ? shift @options : '');
-    my $height_ratio = (@options ? shift @options : '');
+    my $width_ratio = '';
+    my $height_ratio = '';
+    if (defined $args{ratios})
+    {
+	my @rat = split(',', $args{ratios});
+	$width_ratio = $rat[0];
+	$height_ratio = $rat[1];
+    }
 
     # adjust the max-win if we have few windows
     if ($num_win < $max_win)
