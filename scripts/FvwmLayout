@@ -95,18 +95,17 @@ a mirror-image, with the single-window row being on the bottom instead of the to
     # =================================================================
 
     # Hotkeys
-    Key n		A	3	FvwmLayout --action "None"
     Key f		A	3	FvwmLayout --action Full
-    Key t		A	3	FvwmLayout --action Tall 3
-    Key t		A	3S	FvwmLayout --action Tall 3,Right
-    Key c		A	3	FvwmLayout --action Columns 2
-    Key c		A	3S	FvwmLayout --action Columns 3,18:64:18
-    Key r		A	3	FvwmLayout --action Rows 2
-    Key r		A	3S	FvwmLayout --action Rows 2,66
-    Key w		A	3	FvwmLayout --action Wide 3
-    Key w		A	3S	FvwmLayout --action Wide 3,Bottom
-    Key g		A	3	FvwmLayout --action Grid 4,2
-    Key g		A	3S	FvwmLayout --action Grid 4,2,60,50
+    Key t		A	3	FvwmLayout --action Tall --maxwin 3
+    Key t		A	3S	FvwmLayout --action Tall --maxwin 3 --variant Right
+    Key c		A	3	FvwmLayout --action Columns --cols 2
+    Key c		A	3S	FvwmLayout --action Columns --cols 3 --ratios 18:64:18
+    Key r		A	3	FvwmLayout --action Rows --maxwin 2
+    Key r		A	3S	FvwmLayout --action Rows --rows 2 --ratios 66
+    Key w		A	3	FvwmLayout --action Wide --maxwin 3
+    Key w		A	3S	FvwmLayout --action Wide --maxwin 3 --variant Bottom
+    Key g		A	3	FvwmLayout --action Grid --maxwin 4 --cols 2
+    Key g		A	3S	FvwmLayout --action Grid --maxwin 4 --cols 2 --ratios 60,50
 
 =head1 REQUIRES
 

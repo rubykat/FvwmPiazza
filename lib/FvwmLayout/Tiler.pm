@@ -166,10 +166,6 @@ sub handle_end_windowlist {
 
 Apply the requested tiling layout.
 
-None Full
-
-Additional layouts are provided by layout plugins.
-
 =cut
 sub apply_tiling {
     my $self = shift;
@@ -188,16 +184,6 @@ sub apply_tiling {
     my $layout = $args{layout};
     $self->debug("layout=$layout : $args{args}");
 
-    #
-    # "None" will clear layouts
-    #
-    if (($layout eq 'None'))
-    {
-	$self
-	->send("All (CurrentPage, Maximizable) Maximize False");
-
-	return 1;
-    }
     my $vp_width = $self->{pageTracker}->data->{'vp_width'};
     my $vp_height = $self->{pageTracker}->data->{'vp_height'};
     my %work_area = $self->get_workarea();
