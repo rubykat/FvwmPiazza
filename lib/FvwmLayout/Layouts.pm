@@ -1,6 +1,6 @@
-package FvwmLayout::Layouts;
 use strict;
 use warnings;
+package FvwmLayout::Layouts;
 
 =head1 NAME
 
@@ -26,9 +26,6 @@ use YAML::Syck;
 use FvwmLayout::Tiler;
 
 use base qw( Class::Base );
-
-our $ERROR;
-our $DEBUG = 0 unless defined $DEBUG;
 
 =head2 name
 

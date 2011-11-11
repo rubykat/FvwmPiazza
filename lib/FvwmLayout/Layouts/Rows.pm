@@ -1,6 +1,6 @@
-package FvwmLayout::Layouts::Rows;
 use strict;
 use warnings;
+package FvwmLayout::Layouts::Rows;
 
 =head1 NAME
 
@@ -23,9 +23,6 @@ use FvwmLayout::Tiler;
 use FvwmLayout::Page;
 
 use base qw( FvwmLayout::Layouts );
-
-our $ERROR;
-our $DEBUG = 0 unless defined $DEBUG;
 
 =head1 METHODS
 

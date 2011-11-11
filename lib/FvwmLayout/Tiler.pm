@@ -1,5 +1,5 @@
-package FvwmLayout::Tiler;
 use strict;
+package FvwmLayout::Tiler;
 
 =head1 NAME
 
@@ -31,9 +31,6 @@ use base qw( FVWM::Module );
 
 use Module::Pluggable search_path => 'FvwmLayout::Layouts',
     sub_name => 'layouts', instantiate => 'new';
-
-our $ERROR;
-our $DEBUG = 0 unless defined $DEBUG;
 
 =head1 METHODS
 

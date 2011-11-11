@@ -1,6 +1,6 @@
-package FvwmLayout::Layouts::Columns;
 use strict;
 use warnings;
+package FvwmLayout::Layouts::Columns;
 
 =head1 NAME
 
@@ -25,9 +25,6 @@ use FvwmLayout::Page;
 use YAML::Any;
 
 use base qw( FvwmLayout::Layouts );
-
-our $ERROR;
-our $DEBUG = 0 unless defined $DEBUG;
 
 =head1 METHODS
 

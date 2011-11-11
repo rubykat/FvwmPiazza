@@ -1,6 +1,6 @@
-package FvwmLayout::Page;
 use strict;
 use warnings;
+package FvwmLayout::Page;
 
 =head1 NAME
 
@@ -19,9 +19,6 @@ This module keeps track of information for one Fvwm page.
 use lib `fvwm-perllib dir`;
 
 use base qw( Class::Base );
-
-our $ERROR = '';
-our $DEBUG = 0 unless defined $DEBUG;
 
 =head2 init
 

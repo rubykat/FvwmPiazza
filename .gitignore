@@ -3,4 +3,5 @@ _build
 blib/
 .build
 FvwmPiazza*
+FvwmLayout*
 .perlcritic_history
