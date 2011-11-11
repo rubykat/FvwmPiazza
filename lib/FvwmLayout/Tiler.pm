@@ -50,7 +50,7 @@ sub new {
 	Name => "FvwmLayout",
 	Mask => M_STRING | M_WINDOW_NAME | M_END_WINDOWLIST,
 	EnableAlias => 0,
-	Debug => 1,
+	Debug => 0,
 	);
     bless $self, $class;
 
