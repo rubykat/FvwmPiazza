@@ -75,13 +75,11 @@ sub apply_layout {
     my $working_width = $work_area->{wa_width};
     my $working_height = $work_area->{wa_height};
 
-    my $max_win = $args{max_win};
     my $num_win = $area->num_windows();
 
     $args{tiler}->debug(
 	" working_width=$working_width"
 	. " working_height=$working_height"
-	. " max_win=$max_win"
 	. " num_win=$num_win"
     );
     if ($num_win == 0)
