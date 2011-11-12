@@ -187,7 +187,7 @@ sub process_args ($) {
 	       'include=s',
 	       'layout=s',
 	       'maximize!',
-	       'rows=i',
+	       'rows=s',
 	       'cols=i',
 	       'maxwin=i',
 	       'ratios=s',
