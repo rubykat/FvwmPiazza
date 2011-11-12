@@ -44,6 +44,47 @@ sub name {
     return $self->{NAME};
 } # name
 
+=head2 check_args
+
+Check the arguments
+
+=cut
+sub check_args {
+    my $self = shift;
+    my %args = (
+		area=>undef,
+		work_area=>undef,
+		max_win=>1,
+		tiler=>undef,
+		@_
+	       );
+    if (!defined $args{area})
+    {
+	return "area not defined";
+    }
+    if (!defined $args{work_area})
+    {
+	return "work_area not defined";
+    }
+    if (!defined $args{tiler})
+    {
+	return "tiler not defined";
+    }
+    if ($args{area}->num_windows() == 0)
+    {
+	return "there are zero windows";
+    }
+    if (exists $args{wid} and defined $args{wid})
+    {
+	my $window = $args{area}->window_by_id($args{wid});
+	if (!defined $window)
+	{
+	    return "window $args{wid} not defined";
+	}
+    }
+    return '';
+} # check_args
+
 =head2 apply_layout
 
 Apply the requested tiling layout.

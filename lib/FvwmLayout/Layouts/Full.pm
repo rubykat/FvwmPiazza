@@ -38,7 +38,6 @@ sub init {
     return $self;
 } # init
 
-
 =head2 apply_layout
 
 Apply the requested tiling layout.
@@ -47,25 +46,17 @@ Apply the requested tiling layout.
 sub apply_layout {
     my $self = shift;
     my %args = (
-		area=>undef,
-		work_area=>undef,
-		max_win=>1,
-		tiler=>undef,
-		@_
-	       );
-    if (!defined $args{area})
+	area=>undef,
+	work_area=>undef,
+	max_win=>1,
+	tiler=>undef,
+	@_
+    );
+    my $err = $self->check_args(%args);
+    if ($err)
     {
-	return $self->error("area not defined");
+	return $self->error($err);
     }
-    if (!defined $args{work_area})
-    {
-	return $self->error("work_area not defined");
-    }
-    if (!defined $args{tiler})
-    {
-	return $self->error("tiler not defined");
-    }
-    $args{tiler}->debug("in Full apply_layout");
     my $area = $args{area};
     my $work_area = $args{work_area};
 
@@ -79,10 +70,6 @@ sub apply_layout {
 	. " working_height=$working_height"
 	. " num_win=$num_win"
     );
-    if ($num_win == 0)
-    {
-	return $self->error("there are zero windows");
-    }
     
     # Arrange the windows
     my $xpos = 0;
@@ -105,6 +92,56 @@ sub apply_layout {
     }
 
 } # apply_layout
+
+=head2 place_window
+
+Place one window within the tiling layout
+
+=cut
+sub place_window {
+    my $self = shift;
+    my %args = (
+		area=>undef,
+		work_area=>undef,
+		max_win=>1,
+		tiler=>undef,
+		@_
+	       );
+    my $err = $self->check_args(%args);
+    if ($err)
+    {
+	return $self->error($err);
+    }
+    my $area = $args{area};
+    my $work_area = $args{work_area};
+    my $wid = $args{wid};
+    my $window = $area->window_by_id($wid);
+    my $working_width = $work_area->{wa_width};
+    my $working_height = $work_area->{wa_height};
+
+    my $num_win = $area->num_windows();
+
+    if ($num_win == 0)
+    {
+	return $self->error("there are zero windows");
+    }
+    
+    # Arrange this window
+    my $xpos = 0;
+    my $ypos = 0;
+    if (!$self->{VIEWPORT_POS_BUG})
+    {
+	$xpos = $work_area->{wa_x};
+	$ypos = $work_area->{wa_y};
+    }
+    $self->arrange_window(module=>$args{tiler},
+	wid=>$window->{id},
+	x=>$xpos,
+	y=>$ypos,
+	width=>$working_width,
+	height=>$working_height);
+
+} # place_window
 
 =head1 REQUIRES
 

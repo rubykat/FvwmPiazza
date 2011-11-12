@@ -76,6 +76,38 @@ sub window {
     return $win;
 } # window
 
+=head2 window_by_id
+
+Return the given window.
+$grp = $self->window_by_id($wid);
+
+=cut
+sub window_by_id {
+    my $self = shift;
+    my $wid = shift;
+
+    if (!@{$self->{windows}})
+    {
+	return $self->error("No windows");
+    }
+    if ($wid =~ /0x/) # is hexadecimal
+    {
+	$wid = hex($wid);
+    }
+    if (!exists $self->{_windows_by_id})
+    {
+	$self->{_windows_by_id} = {};
+	for (my $i=0; $i < @{$self->{windows}}; $i++)
+	{
+	    my $win = $self->{windows}[$i];
+	    $self->{_windows_by_id}{$win->{id}} = $win;
+	}
+    }
+    return (exists $self->{_windows_by_id}{$wid}
+	? $self->{_windows_by_id}{$wid}
+	: undef);
+} # window_by_id
+
 =head1 REQUIRES
 
     Class::Base

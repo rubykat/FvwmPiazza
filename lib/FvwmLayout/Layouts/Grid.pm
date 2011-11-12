@@ -21,6 +21,7 @@ use lib `fvwm-perllib dir`;
 use FVWM::Module;
 use FvwmLayout::Tiler;
 use FvwmLayout::Page;
+use YAML::Any;
 
 use base qw( FvwmLayout::Layouts );
 
@@ -36,7 +37,6 @@ sub init {
     return $self;
 } # init
 
-
 =head2 apply_layout
 
 Apply the requested tiling layout.
@@ -51,17 +51,10 @@ sub apply_layout {
 		tiler=>undef,
 		@_
 	       );
-    if (!defined $args{area})
+    my $err = $self->check_args(%args);
+    if ($err)
     {
-	return $self->error("area not defined");
-    }
-    if (!defined $args{work_area})
-    {
-	return $self->error("work_area not defined");
-    }
-    if (!defined $args{tiler})
-    {
-	return $self->error("tiler not defined");
+	return $self->error($err);
     }
     my $area = $args{area};
     my $work_area = $args{work_area};
@@ -87,10 +80,6 @@ sub apply_layout {
 	)
     );
 
-    if ($num_win == 0)
-    {
-	return $self->error("there are zero windows");
-    }
     $num_cols = 1 if $num_win == 1;
 
     # adjust the max-win if we have few windows
@@ -166,6 +155,132 @@ sub apply_layout {
     }
 
 } # apply_layout
+
+=head2 place_window
+
+Place one window within the tiling layout
+
+=cut
+sub place_window {
+    my $self = shift;
+    my %args = (
+		area=>undef,
+		work_area=>undef,
+		max_win=>2,
+		tiler=>undef,
+		@_
+	       );
+    my $err = $self->check_args(%args);
+    if ($err)
+    {
+	$args{tiler}->debug("ERROR: $err");
+	return $self->error($err);
+    }
+    my $area = $args{area};
+    my $work_area = $args{work_area};
+    my $wid = $args{wid};
+    my $window = $area->window_by_id($wid);
+
+    my $num_cols = ($args{cols} ? $args{cols} : 2);
+    my $width_ratio = '';
+    my $height_ratio = '';
+    if (defined $args{ratios})
+    {
+	my @rat = split(',', $args{ratios});
+	$width_ratio = $rat[0];
+	$height_ratio = $rat[1];
+    }
+
+    my $working_width = $work_area->{wa_width};
+    my $working_height = $work_area->{wa_height};
+
+    my $num_win = $area->num_windows();
+    my $max_win = ($args{max_win} ? $args{max_win}
+	: ($args{cols} and $args{rows}
+	    ? ($args{cols} * $args{rows})
+	    : $num_cols
+	)
+    );
+
+    $num_cols = 1 if $num_win == 1;
+
+    # adjust the max-win if we have few windows
+    my $fewer = 0;
+    if ($num_win < $max_win)
+    {
+	$max_win = $num_win + ($num_win % $num_cols);
+	$fewer = 1;
+    }
+
+    my $num_rows = ($args{rows}
+	? $args{rows}
+	: int($max_win / $num_cols));
+
+    # Calculate the width and height ratios
+    my @width_ratios =
+	$self->calculate_ratios(num_sets=>$num_cols, ratios=>$width_ratio);
+    my @height_ratios =
+	$self->calculate_ratios(num_sets=>$num_rows, ratios=>$height_ratio);
+
+    # Calculate the centre point of this window
+    my $centre_x = $window->{x} + ($window->{width} / 2);
+    my $centre_y = $window->{y} + ($window->{height} / 2);
+
+    my $col_nr = 0;
+    my $row_nr = 0;
+    my $xpos = 0;
+    my $ypos = 0;
+    if (!$self->{VIEWPORT_POS_BUG})
+    {
+	$xpos = $work_area->{wa_x};
+	$ypos = $work_area->{wa_y};
+    }
+    my $placed = 0;
+    while (!$placed and $col_nr < $num_cols)
+    {
+	my $col_width = int($working_width * $width_ratios[$col_nr]);
+	my $row_height;
+
+	$row_height = int($working_height * $height_ratios[$row_nr]);
+
+	if (($centre_x > $xpos
+		and $centre_x < ($xpos + $col_width))
+		and ($centre_y > $ypos
+		and $centre_y < ($ypos + $row_height)))
+	{
+	    $self->arrange_window(module=>$args{tiler},
+		wid=>$window->{id},
+		x=>$xpos,
+		y=>$ypos,
+		width=>$col_width,
+		height=>$row_height);
+	    $placed = 1;
+	    last;
+	}
+
+	$row_nr++;
+	$ypos += $row_height;
+	if ($row_nr == $num_rows)
+	{
+	    $row_nr = 0;
+	    $ypos = ($self->{VIEWPORT_POS_BUG} ? 0 : $work_area->{wa_y});
+	    $col_nr++;
+	    $xpos += $col_width;
+	}
+    }
+    if (!$placed)
+    {
+	$args{tiler}->debug("could not place window[$wid] ==== "
+	    . " x=$window->{x}"
+	    . " y=$window->{y}"
+	    . " width=$window->{width}"
+	    . " height=$window->{height}"
+	    . " centre_x=$centre_x"
+	    . " centre_y=$centre_y"
+	);
+    }
+
+} # place_window
 
 =head1 REQUIRES
 

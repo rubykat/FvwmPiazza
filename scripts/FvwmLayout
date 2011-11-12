@@ -193,6 +193,7 @@ sub process_args ($) {
 	       'ratios=s',
 	       'variant=s',
 	       'options=s',
+	       'wid|window_id=s',
 	      ) or pod2usage(2);
 
     if ($opts->{'manpage'})

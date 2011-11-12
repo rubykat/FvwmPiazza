@@ -38,7 +38,6 @@ sub init {
     return $self;
 } # init
 
-
 =head2 apply_layout
 
 Apply the requested tiling layout.
@@ -53,17 +52,10 @@ sub apply_layout {
 		tiler=>undef,
 		@_
 	       );
-    if (!defined $args{area})
+    my $err = $self->check_args(%args);
+    if ($err)
     {
-	return $self->error("area not defined");
-    }
-    if (!defined $args{work_area})
-    {
-	return $self->error("work_area not defined");
-    }
-    if (!defined $args{tiler})
-    {
-	return $self->error("tiler not defined");
+	return $self->error($err);
     }
     my $area = $args{area};
     my $work_area = $args{work_area};
@@ -75,10 +67,6 @@ sub apply_layout {
 	: ($args{cols} ? $args{cols} : 2));
     my $num_win = $area->num_windows();
 
-    if ($num_win == 0)
-    {
-	return $self->error("there are zero windows");
-    }
     my $fewer = 0;
     if ($num_win < $num_cols)
     {
@@ -132,6 +120,91 @@ sub apply_layout {
     }
 
 } # apply_layout
+
+=head2 place_window
+
+Place one window within the tiling layout
+
+=cut
+sub place_window {
+    my $self = shift;
+    my %args = (
+		area=>undef,
+		work_area=>undef,
+		wid=>undef,
+		max_win=>2,
+		tiler=>undef,
+		@_
+	       );
+    my $err = $self->check_args(%args);
+    if ($err)
+    {
+	return $self->error($err);
+    }
+    my $area = $args{area};
+    my $work_area = $args{work_area};
+    my $wid = $args{wid};
+    my $window = $area->window_by_id($wid);
+
+    my $working_width = $work_area->{wa_width};
+    my $working_height = $work_area->{wa_height};
+
+    my $num_cols = ($args{max_win} ? $args{max_win}
+	: ($args{cols} ? $args{cols} : 2));
+    my $num_win = $area->num_windows();
+
+    my $fewer = 0;
+    if ($num_win < $num_cols)
+    {
+	$num_cols = $num_win;
+	$fewer = 1;
+    }
+    
+    # Calculate the column widths
+    # Don't apply the passed-in ratios if we have fewer columns
+    # than the layout requires
+    my @ratios = ();
+    if (!$fewer and defined $args{ratios})
+    {
+	@ratios = $self->calculate_ratios(num_sets=>$num_cols,
+	    ratios=>$args{ratios});
+    }
+    else
+    {
+	@ratios = $self->calculate_ratios(num_sets=>$num_cols);
+    }
+
+    # Calculate the centre point of this window
+    my $centre_x = $window->{x} + ($window->{width} / 2);
+    my $centre_y = $window->{y} + ($window->{height} / 2);
+
+    # Arrange this window
+    # Find the column which this window is nearest to.
+    my $xpos = 0;
+    my $ypos = 0;
+    if (!$self->{VIEWPORT_POS_BUG})
+    {
+	$xpos = $work_area->{wa_x};
+	$ypos = $work_area->{wa_y};
+    }
+    for (my $col_nr = 0; $col_nr < $num_cols; $col_nr++)
+    {
+	my $col_width = int($working_width * $ratios[$col_nr]);
+	if ($centre_x > $xpos
+		and $centre_x < ($xpos + $col_width))
+	{
+	    $self->arrange_window(module=>$args{tiler},
+		wid=>$window->{id},
+		x=>$xpos,
+		y=>$ypos,
+		width=>$col_width,
+		height=>$working_height);
+	    last;
+	}
+	$xpos += $col_width;
+    }
+
+} # place_window
 
 =head1 REQUIRES
 

@@ -47,7 +47,7 @@ sub new {
 	Name => "FvwmLayout",
 	Mask => M_STRING | M_WINDOW_NAME | M_END_WINDOWLIST,
 	EnableAlias => 0,
-	Debug => 0,
+	Debug => 1,
 	);
     bless $self, $class;
 
@@ -188,17 +188,35 @@ sub apply_tiling {
     if (exists $self->{Layouts}->{$layout}
 	and defined $self->{Layouts}->{$layout})
     {
-	$self->{Layouts}->{$layout}->apply_layout(
-	    area=>$page_info,
-	    work_area=>\%work_area,
-	    max_win=>$self->{maxwin},
-	    rows=>$self->{rows},
-	    cols=>$self->{cols},
-	    ratios=>$self->{ratios},
-	    variant=>$self->{variant},
-	    options=>$self->{options},
-	    tiler=>$self,
-	);
+	if ($self->{wid})
+	{
+	    $self->{Layouts}->{$layout}->place_window(
+		area=>$page_info,
+		work_area=>\%work_area,
+		wid=>$self->{wid},
+		max_win=>$self->{maxwin},
+		rows=>$self->{rows},
+		cols=>$self->{cols},
+		ratios=>$self->{ratios},
+		variant=>$self->{variant},
+		options=>$self->{options},
+		tiler=>$self,
+	    );
+	}
+	else
+	{
+	    $self->{Layouts}->{$layout}->apply_layout(
+		area=>$page_info,
+		work_area=>\%work_area,
+		max_win=>$self->{maxwin},
+		rows=>$self->{rows},
+		cols=>$self->{cols},
+		ratios=>$self->{ratios},
+		variant=>$self->{variant},
+		options=>$self->{options},
+		tiler=>$self,
+	    );
+	}
     }
 
 } # apply_tiling

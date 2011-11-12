@@ -36,7 +36,6 @@ sub init {
     return $self;
 } # init
 
-
 =head2 apply_layout
 
 Apply the requested tiling layout.
@@ -51,17 +50,10 @@ sub apply_layout {
 		tiler=>undef,
 		@_
 	       );
-    if (!defined $args{area})
+    my $err = $self->check_args(%args);
+    if ($err)
     {
-	return $self->error("area not defined");
-    }
-    if (!defined $args{work_area})
-    {
-	return $self->error("work_area not defined");
-    }
-    if (!defined $args{tiler})
-    {
-	return $self->error("tiler not defined");
+	return $self->error($err);
     }
     my $area = $args{area};
     my $work_area = $args{work_area};
@@ -73,10 +65,6 @@ sub apply_layout {
 	: ($args{rows} ? $args{rows} : 2));
     my $num_win = $area->num_windows();
 
-    if ($num_win == 0)
-    {
-	return $self->error("there are zero windows");
-    }
     my $fewer = 0;
     if ($num_win < $num_rows)
     {
@@ -127,6 +115,90 @@ sub apply_layout {
     }
 
 } # apply_layout
+
+=head2 place_window
+
+Place one window within the tiling layout
+
+=cut
+sub place_window {
+    my $self = shift;
+    my %args = (
+		area=>undef,
+		work_area=>undef,
+		max_win=>2,
+		tiler=>undef,
+		@_
+	       );
+    my $err = $self->check_args(%args);
+    if ($err)
+    {
+	return $self->error($err);
+    }
+    my $area = $args{area};
+    my $work_area = $args{work_area};
+    my $wid = $args{wid};
+    my $window = $area->window_by_id($wid);
+
+    my $working_width = $work_area->{wa_width};
+    my $working_height = $work_area->{wa_height};
+
+    my $num_rows = ($args{max_win} ? $args{max_win}
+	: ($args{rows} ? $args{rows} : 2));
+    my $num_win = $area->num_windows();
+
+    my $fewer = 0;
+    if ($num_win < $num_rows)
+    {
+	$num_rows = $num_win;
+	$fewer = 1;
+    }
+
+    # Calculate the row heights
+    # Don't apply the passed-in ratios if we have fewer rows
+    # than the layout requires
+    my @ratios = ();
+    if (!$fewer and defined $args{ratios})
+    {
+	@ratios = $self->calculate_ratios(num_sets=>$num_rows,
+	    ratios=>$args{ratios});
+    }
+    else
+    {
+	@ratios = $self->calculate_ratios(num_sets=>$num_rows);
+    }
+
+    # Calculate the centre point of this window
+    my $centre_x = $window->{x} + ($window->{width} / 2);
+    my $centre_y = $window->{y} + ($window->{height} / 2);
+
+    # Arrange this window
+    # Find the row which this window is nearest to.
+    my $xpos = 0;
+    my $ypos = 0;
+    if (!$self->{VIEWPORT_POS_BUG})
+    {
+	$xpos = $work_area->{wa_x};
+	$ypos = $work_area->{wa_y};
+    }
+    for (my $row_nr = 0; $row_nr < $num_rows; $row_nr++)
+    {
+	my $row_height = int($working_height * $ratios[$row_nr]);
+	if ($centre_y > $ypos
+		and $centre_y < ($ypos + $row_height))
+	{
+	    $self->arrange_window(module=>$args{tiler},
+		wid=>$window->{id},
+		x=>$xpos,
+		y=>$ypos,
+		width=>$working_width,
+		height=>$row_height);
+	    last;
+	}
+	$ypos += $row_height;
+    }
+
+} # place_window
 
 =head1 REQUIRES
 
