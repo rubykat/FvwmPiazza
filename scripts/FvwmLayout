@@ -17,7 +17,7 @@ Layouts are applied on a per-desktop basis.
 To set a layout you must send a message to the module; this is most easily done
 by setting a hotkey command for it.
 
-    Key f		A	CM	FvwmLayout --action Full
+    Key f		A	CM	FvwmLayout --layout Full
 
 This will set the layout for the current desktop to "Full" when Alt-Ctrl-f is hit.
 
@@ -95,17 +95,17 @@ a mirror-image, with the single-window row being on the bottom instead of the to
     # =================================================================
 
     # Hotkeys
-    Key f		A	3	FvwmLayout --action Full
-    Key t		A	3	FvwmLayout --action Tall --maxwin 3
-    Key t		A	3S	FvwmLayout --action Tall --maxwin 3 --variant Right
-    Key c		A	3	FvwmLayout --action Columns --cols 2
-    Key c		A	3S	FvwmLayout --action Columns --cols 3 --ratios 18:64:18
-    Key r		A	3	FvwmLayout --action Rows --maxwin 2
-    Key r		A	3S	FvwmLayout --action Rows --rows 2 --ratios 66
-    Key w		A	3	FvwmLayout --action Wide --maxwin 3
-    Key w		A	3S	FvwmLayout --action Wide --maxwin 3 --variant Bottom
-    Key g		A	3	FvwmLayout --action Grid --maxwin 4 --cols 2
-    Key g		A	3S	FvwmLayout --action Grid --maxwin 4 --cols 2 --ratios 60,50
+    Key f		A	3	FvwmLayout --layout Full
+    Key t		A	3	FvwmLayout --layout Tall --maxwin 3
+    Key t		A	3S	FvwmLayout --layout Tall --maxwin 3 --variant Right
+    Key c		A	3	FvwmLayout --layout Columns --cols 2
+    Key c		A	3S	FvwmLayout --layout Columns --cols 3 --ratios 18:64:18
+    Key r		A	3	FvwmLayout --layout Rows --maxwin 2
+    Key r		A	3S	FvwmLayout --layout Rows --rows 2 --ratios 66
+    Key w		A	3	FvwmLayout --layout Wide --maxwin 3
+    Key w		A	3S	FvwmLayout --layout Wide --maxwin 3 --variant Bottom
+    Key g		A	3	FvwmLayout --layout Grid --maxwin 4 --cols 2
+    Key g		A	3S	FvwmLayout --layout Grid --maxwin 4 --cols 2 --ratios 60,50
 
 =head1 REQUIRES
 
@@ -185,7 +185,7 @@ sub process_args ($) {
 	       'manpage',
 	       'exclude=s',
 	       'include=s',
-	       'action=s',
+	       'layout=s',
 	       'maximize!',
 	       'rows=i',
 	       'cols=i',

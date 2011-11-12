@@ -105,14 +105,14 @@ Start the event loop.
 sub start {
     my $self = shift;
 
-    if ($self->{action} =~ /dump/i)
+    if ($self->{layout} =~ /dump/i)
     {
 	$self->debug("===============================\n"
 	    . Dump($self)
 	    . "---------------------\n");
 	return 1;
     }
-    $self->debug("action=" . $self->{action});
+    $self->debug("layout=" . $self->{layout});
 
     # Ask fvwm to send us its list of windows
     $self->send("Send_WindowList");
@@ -148,7 +148,7 @@ sub handle_end_windowlist {
     my $self = shift;
     my $event = shift;
 
-    $self->apply_tiling(layout=>$self->{action});
+    $self->apply_tiling(layout=>$self->{layout});
 
     # We're done!
     # Terminate itself after 1 second
