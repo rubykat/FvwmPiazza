@@ -60,9 +60,12 @@ sub apply_layout {
 
     my $num_cols = ($args{cols} ? $args{cols} : 2);
     my $width_ratio = '';
-    if (defined $args{ratios}) # only give ratios for columns
+    my $height_ratio = '';
+    if (defined $args{ratios})
     {
-	$width_ratio = $args{ratios};
+	my @rat = split(',', $args{ratios});
+	$width_ratio = $rat[0];
+	$height_ratio = $rat[1];
     }
     my @row_set = ();
     if (defined $args{rows})
@@ -112,8 +115,13 @@ sub apply_layout {
 	my $win = $area->window($i);
 	my $col_width = int($working_width * $width_ratios[$col_nr]);
 	my $num_rows = $row_set[$col_nr];
+
+	# Re-calculate the height ratios for each column,
+	# since there are a varying number of rows
+	# Note that there is only ONE height-ratio given for row-heights,
+	# so its effectiveness is somewhat limited.
 	my @height_ratios =
-	$self->calculate_ratios(num_sets=>$num_rows, ratios=>'');
+	$self->calculate_ratios(num_sets=>$num_rows, ratios=>$height_ratio);
 	my $row_height = int($working_height * $height_ratios[$row_nr]);
 
 	$self->arrange_window(module=>$args{tiler},
