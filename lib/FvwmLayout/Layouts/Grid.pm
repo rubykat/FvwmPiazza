@@ -82,14 +82,6 @@ sub apply_layout {
 
     $num_cols = 1 if $num_win == 1;
 
-    # adjust the max-win if we have few windows
-    my $fewer = 0;
-    if ($num_win < $max_win)
-    {
-	$max_win = $num_win + ($num_win % $num_cols);
-	$fewer = 1;
-    }
-
     my $num_rows = ($args{rows}
 	? $args{rows}
 	: int($max_win / $num_cols));
@@ -113,23 +105,7 @@ sub apply_layout {
     {
 	my $win = $area->window($i);
 	my $col_width = int($working_width * $width_ratios[$col_nr]);
-	my $row_height;
-
-	my $windows_left = $area->num_windows() - $i;
-
-	# If we have N windows left and N columns left
-	# decrease the number of rows
-	if ($windows_left <= ($num_cols - $col_nr)
-		and $row_nr == 0
-		and $fewer)
-	{
-	    $num_rows = 1;
-	    $row_height = $working_height;
-	}
-	else
-	{
-	    $row_height = int($working_height * $height_ratios[$row_nr]);
-	}
+	my $row_height = int($working_height * $height_ratios[$row_nr]);
 
 	$self->arrange_window(module=>$args{tiler},
 	    wid=>$win->{id},
@@ -203,14 +179,6 @@ sub place_window {
     );
 
     $num_cols = 1 if $num_win == 1;
-
-    # adjust the max-win if we have few windows
-    my $fewer = 0;
-    if ($num_win < $max_win)
-    {
-	$max_win = $num_win + ($num_win % $num_cols);
-	$fewer = 1;
-    }
 
     my $num_rows = ($args{rows}
 	? $args{rows}

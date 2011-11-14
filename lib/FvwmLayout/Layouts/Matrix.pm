@@ -151,7 +151,6 @@ sub place_window {
     my %args = (
 		area=>undef,
 		work_area=>undef,
-		max_win=>2,
 		tiler=>undef,
 		@_
 	       );

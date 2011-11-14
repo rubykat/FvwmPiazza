@@ -67,18 +67,9 @@ sub apply_layout {
 	: ($args{cols} ? $args{cols} : 2));
     my $num_win = $area->num_windows();
 
-    my $fewer = 0;
-    if ($num_win < $num_cols)
-    {
-	$num_cols = $num_win;
-	$fewer = 1;
-    }
-    
     # Calculate the column widths
-    # Don't apply the passed-in ratios if we have fewer columns
-    # than the layout requires
     my @ratios = ();
-    if (!$fewer and defined $args{ratios})
+    if (defined $args{ratios})
     {
 	@ratios = $self->calculate_ratios(num_sets=>$num_cols,
 	    ratios=>$args{ratios});
@@ -153,18 +144,9 @@ sub place_window {
 	: ($args{cols} ? $args{cols} : 2));
     my $num_win = $area->num_windows();
 
-    my $fewer = 0;
-    if ($num_win < $num_cols)
-    {
-	$num_cols = $num_win;
-	$fewer = 1;
-    }
-    
     # Calculate the column widths
-    # Don't apply the passed-in ratios if we have fewer columns
-    # than the layout requires
     my @ratios = ();
-    if (!$fewer and defined $args{ratios})
+    if (defined $args{ratios})
     {
 	@ratios = $self->calculate_ratios(num_sets=>$num_cols,
 	    ratios=>$args{ratios});
