@@ -79,7 +79,7 @@ sub init {
     {
 	$self->debug("Layout: " . ref $lay);
 	$self->{Layouts}->{$lay->name()} = $lay;
-	$self->{Layouts}->{$lay->name()}->{VIEWPORT_POS_BUG} = $self->{viewport_pos_bug;
+	$self->{Layouts}->{$lay->name()}->{VIEWPORT_POS_BUG} = $self->{viewport_pos_bug};
 	$self->{Layouts}->{$lay->name()}->{maximize} = $self->{maximize};
     }
 
