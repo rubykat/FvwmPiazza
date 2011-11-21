@@ -74,7 +74,7 @@ sub apply_layout {
     # Arrange the windows
     my $xpos = 0;
     my $ypos = 0;
-    if (!$self->{VIEWPORT_POS_BUG})
+    if (!$self->{MOVE_HONOURS_STRUTS})
     {
 	$xpos = $work_area->{wa_x};
 	$ypos = $work_area->{wa_y};
@@ -129,7 +129,7 @@ sub place_window {
     # Arrange this window
     my $xpos = 0;
     my $ypos = 0;
-    if (!$self->{VIEWPORT_POS_BUG})
+    if (!$self->{MOVE_HONOURS_STRUTS})
     {
 	$xpos = $work_area->{wa_x};
 	$ypos = $work_area->{wa_y};

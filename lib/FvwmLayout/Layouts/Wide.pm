@@ -96,7 +96,7 @@ sub apply_layout {
     my $row_nr = 0;
     my $xpos = 0;
     my $ypos = 0;
-    if (!$self->{VIEWPORT_POS_BUG})
+    if (!$self->{MOVE_HONOURS_STRUTS})
     {
 	$xpos = $work_area->{wa_x};
 	$ypos = $work_area->{wa_y};
@@ -111,7 +111,7 @@ sub apply_layout {
 	{
 	    $self->arrange_window(module=>$args{tiler},
 		wid=>$win->{id},
-		x=>($self->{VIEWPORT_POS_BUG} ? 0 : $work_area->{wa_x}),
+		x=>($self->{MOVE_HONOURS_STRUTS} ? 0 : $work_area->{wa_x}),
 		y=>$ypos,
 		width=>$working_width,
 		height=>$row_height);
@@ -134,7 +134,7 @@ sub apply_layout {
 	{
 	    $row_nr++;
 	    $col_nr = 0;
-	    $xpos = ($self->{VIEWPORT_POS_BUG} ? 0 : $work_area->{wa_x});
+	    $xpos = ($self->{MOVE_HONOURS_STRUTS} ? 0 : $work_area->{wa_x});
 	    $ypos += $row_height;
 	}
 	else
@@ -144,7 +144,7 @@ sub apply_layout {
 	    if ($col_nr >= $num_cols)
 	    {
 		$col_nr = 0;
-		$xpos = ($self->{VIEWPORT_POS_BUG} ? 0 : $work_area->{wa_x});
+		$xpos = ($self->{MOVE_HONOURS_STRUTS} ? 0 : $work_area->{wa_x});
 		$row_nr++;
 		$ypos += $row_height;
 	    }
@@ -153,8 +153,8 @@ sub apply_layout {
 	{
 	    $col_nr = 0;
 	    $row_nr = 0;
-	    $xpos = ($self->{VIEWPORT_POS_BUG} ? 0 : $work_area->{wa_x});
-	    $ypos = ($self->{VIEWPORT_POS_BUG} ? 0 : $work_area->{wa_y});
+	    $xpos = ($self->{MOVE_HONOURS_STRUTS} ? 0 : $work_area->{wa_x});
+	    $ypos = ($self->{MOVE_HONOURS_STRUTS} ? 0 : $work_area->{wa_y});
 	}
     }
 
@@ -225,7 +225,7 @@ sub place_window {
     my $row_nr = 0;
     my $xpos = 0;
     my $ypos = 0;
-    if (!$self->{VIEWPORT_POS_BUG})
+    if (!$self->{MOVE_HONOURS_STRUTS})
     {
 	$xpos = $work_area->{wa_x};
 	$ypos = $work_area->{wa_y};
@@ -243,7 +243,7 @@ sub place_window {
 	    {
 		$self->arrange_window(module=>$args{tiler},
 		    wid=>$window->{id},
-		    x=>($self->{VIEWPORT_POS_BUG} ? 0 : $work_area->{wa_x}),
+		    x=>($self->{MOVE_HONOURS_STRUTS} ? 0 : $work_area->{wa_x}),
 		    y=>$ypos,
 		    width=>$working_width,
 		    height=>$row_height);
@@ -275,7 +275,7 @@ sub place_window {
 	{
 	    $row_nr++;
 	    $col_nr = 0;
-	    $xpos = ($self->{VIEWPORT_POS_BUG} ? 0 : $work_area->{wa_x});
+	    $xpos = ($self->{MOVE_HONOURS_STRUTS} ? 0 : $work_area->{wa_x});
 	    $ypos += $row_height;
 	}
 	else
@@ -285,7 +285,7 @@ sub place_window {
 	    if ($col_nr >= $num_cols)
 	    {
 		$col_nr = 0;
-		$xpos = ($self->{VIEWPORT_POS_BUG} ? 0 : $work_area->{wa_x});
+		$xpos = ($self->{MOVE_HONOURS_STRUTS} ? 0 : $work_area->{wa_x});
 		$row_nr++;
 		$ypos += $row_height;
 	    }
@@ -294,8 +294,8 @@ sub place_window {
 	{
 	    $col_nr = 0;
 	    $row_nr = 0;
-	    $xpos = ($self->{VIEWPORT_POS_BUG} ? 0 : $work_area->{wa_x});
-	    $ypos = ($self->{VIEWPORT_POS_BUG} ? 0 : $work_area->{wa_y});
+	    $xpos = ($self->{MOVE_HONOURS_STRUTS} ? 0 : $work_area->{wa_x});
+	    $ypos = ($self->{MOVE_HONOURS_STRUTS} ? 0 : $work_area->{wa_y});
 	}
     }
     if (!$placed)

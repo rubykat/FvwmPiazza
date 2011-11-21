@@ -82,7 +82,7 @@ sub apply_layout {
     # Arrange the windows
     my $xpos = 0;
     my $ypos = 0;
-    if (!$self->{VIEWPORT_POS_BUG})
+    if (!$self->{MOVE_HONOURS_STRUTS})
     {
 	$xpos = $work_area->{wa_x};
 	$ypos = $work_area->{wa_y};
@@ -106,7 +106,7 @@ sub apply_layout {
 	if ($col_nr >= $num_cols)
 	{
 	    $col_nr = 0;
-	    $xpos = ($self->{VIEWPORT_POS_BUG} ? 0 : $work_area->{wa_x});
+	    $xpos = ($self->{MOVE_HONOURS_STRUTS} ? 0 : $work_area->{wa_x});
 	}
     }
 
@@ -164,7 +164,7 @@ sub place_window {
     # Find the column which this window is nearest to.
     my $xpos = 0;
     my $ypos = 0;
-    if (!$self->{VIEWPORT_POS_BUG})
+    if (!$self->{MOVE_HONOURS_STRUTS})
     {
 	$xpos = $work_area->{wa_x};
 	$ypos = $work_area->{wa_y};
