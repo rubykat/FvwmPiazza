@@ -5,23 +5,16 @@ FvwmLayout - Fvwm module for tiling windows
 
 =head1 SYNOPSIS
 
-FvwmLayout 
+FvwmLayout --help | --manpage
+
+FvwmLayout [ --wid I<string> ] --layout I<layout-type> [ --exclude I<regex> ] [ --include I<regex> ] [ --maximize | --nomaximize ] [ --rows I<rows> ] [ --cols I<cols> ] [ --maxwin I<number> ] [ --ratios I<ratios> ] [ --variant I<variant> ] [ --options I<options> ]
 
 =head1 DESCRIPTION
 
 This Fvwm module tiles windows in different ways; each "way" is called a layout.
-Layouts are applied on a per-desktop basis.
+Layouts are applied on a per-page basis.
 
-=head2 Layouts
-
-To set a layout you must send a message to the module; this is most easily done
-by setting a hotkey command for it.
-
-    Key f		A	CM	FvwmLayout --layout Full
-
-This will set the layout for the current desktop to "Full" when Alt-Ctrl-f is hit.
-
-=head3 Layout Types
+=head2 Layout Types
 
 =over
 
@@ -163,45 +156,36 @@ sub process_args ($) {
 
     my $ok = 1;
 
-    # check the rc file if we can
-    if (eval("require Getopt::ArgvFile")) {
-	my $nameBuilder=sub
-	{
-	    my $bn = basename($_[0], '');
-	    [".${bn}rc", ".${bn}/config", ".config/${bn}/config"];
-	};
-	Getopt::ArgvFile::argvFile(
-				   startupFilename=>$nameBuilder,
-				   home=>1,
-				   current=>1);
-    }
-
     pod2usage(2) unless @ARGV;
 
     my $op = new Getopt::Long::Parser;
     $op->configure(qw(auto_version auto_help));
     $op->getoptions($opts,
-	       'verbose!',
-	       'manpage',
-	       'exclude=s',
-	       'include=s',
-	       'layout=s',
-	       'maximize!',
-	       'rows=s',
-	       'cols=i',
-	       'maxwin=i',
-	       'ratios=s',
-	       'variant=s',
-	       'options=s',
-	       'wid|window_id=s',
-	      ) or pod2usage(2);
+	'verbose!',
+	'manpage',
+	'exclude=s',
+	'include=s',
+	'layout=s',
+	'maximize!',
+	'rows=s',
+	'cols=i',
+	'maxwin=i',
+	'ratios=s',
+	'variant=s',
+	'options=s',
+	'wid|window_id=s',
+    ) or pod2usage(2);
 
     if ($opts->{'manpage'})
     {
 	pod2usage({ -message => "$0 version $VERSION",
-		    -exitval => 0,
-		    -verbose => 2,
+		-exitval => 0,
+		-verbose => 2,
 	    });
+    }
+    if (exists $opts->{wid} and !$opts->{wid})
+    {
+	pod2usage(2);
     }
 
 } # process_args
