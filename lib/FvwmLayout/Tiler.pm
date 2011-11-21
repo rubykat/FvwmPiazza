@@ -11,8 +11,12 @@ FvwmLayout::Tiler - Fvwm module for tiling windows.
 
     my $obj = FvwmLayout::Tiler->new(\%args);
 
-    Key	f   A	MS  FvwmLayout Full
+    ---------------------------------
 
+    *FvwmLayout: Exclude (Gimp|feh)
+    *FvwmLayout: UseMaximize true
+
+    Key	f   A	MS  FvwmLayout --layout Full
 
 =head1 DESCRIPTION
 
@@ -45,7 +49,7 @@ sub new {
 
     my $self = $class->SUPER::new(
 	Name => "FvwmLayout",
-	Mask => M_STRING | M_WINDOW_NAME | M_END_WINDOWLIST,
+	Mask => M_WINDOW_NAME | M_END_WINDOWLIST,
 	EnableAlias => 0,
 	Debug => 1,
 	);
@@ -69,6 +73,13 @@ sub init {
 	$self->{$key} = $val;
     }
 
+    $self->{configTracker} = $self->track('ModuleConfig',
+		DefaultConfig => {
+		Include => '',
+		Exclude => '',
+		UseMaximize => 0,
+	},
+    );
     $self->{pageTracker} = $self->track("PageInfo");
     $self->{winTracker} = $self->track("WindowList");
 
@@ -84,7 +95,7 @@ sub init {
 	$self->debug("Layout: " . ref $lay);
 	$self->{Layouts}->{$lay->name()} = $lay;
 	$self->{Layouts}->{$lay->name()}->{MOVE_HONOURS_STRUTS} = $move_honours_struts;
-	$self->{Layouts}->{$lay->name()}->{maximize} = $self->{maximize};
+	$self->{Layouts}->{$lay->name()}->{maximize} = $self->{configTracker}->data('UseMaximize');
     }
 
     $self->add_handler(M_WINDOW_NAME, sub {
@@ -301,8 +312,8 @@ sub check_interest {
 	$wid = $window->{id};
     }
     my $interest = 1;
-    my $include = $self->{include};
-    my $exclude = $self->{exclude};
+    my $include = ($self->{include} ? $self->{include} : $self->{configTracker}->data('Include'));
+    my $exclude = ($self->{exclude} ? $self->{exclude} : $self->{configTracker}->data('Exclude'));
     my @names = ();
     open (XPROP, "xprop -id $wid |") or die "Could not start xprop";
     while (<XPROP>)
