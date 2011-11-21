@@ -23,7 +23,7 @@ This tiles windows in different ways.
 use lib `fvwm-perllib dir`;
 
 use FVWM::Module;
-use General::Parse;
+use version;
 use YAML::Any;
 use FvwmLayout::Page;
 
@@ -72,14 +72,18 @@ sub init {
     $self->{pageTracker} = $self->track("PageInfo");
     $self->{winTracker} = $self->track("WindowList");
 
-    $self->{current_group} = undef;
-    $self->{desks} = {};
+    # In Fvwm version 2.6.3, the behaviour of "Move" commands
+    # changed so that they honoured EWMH-struts.
+    # For previous versions, we have to do the strut-checking ourselves.
+    my $fvwm_version = version->parse($self->version());
+    my $move_honours_struts = ($fvwm_version >= version->parse("2.6.3"));
+
     $self->{Layouts} = {};
     foreach my $lay ($self->layouts())
     {
 	$self->debug("Layout: " . ref $lay);
 	$self->{Layouts}->{$lay->name()} = $lay;
-	$self->{Layouts}->{$lay->name()}->{MOVE_HONOURS_STRUTS} = $self->{viewport_pos_bug};
+	$self->{Layouts}->{$lay->name()}->{MOVE_HONOURS_STRUTS} = $move_honours_struts;
 	$self->{Layouts}->{$lay->name()}->{maximize} = $self->{maximize};
     }
 

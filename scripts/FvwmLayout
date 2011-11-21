@@ -183,7 +183,6 @@ sub process_args ($) {
     $op->getoptions($opts,
 	       'verbose!',
 	       'manpage',
-	       'viewport_pos_bug!',
 	       'exclude=s',
 	       'include=s',
 	       'layout=s',
