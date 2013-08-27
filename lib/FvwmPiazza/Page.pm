@@ -234,6 +234,9 @@ sub redistribute_windows {
     );
 
     my $n_groups = ($args{n_groups} ? $args{n_groups} : $self->num_groups());
+
+    # This mostly preserves window groupings because it
+    # preserves the order of the windows taken from the groups
     my @window_list = ();
     foreach my $gid (sort keys %{$self->{groups}})
     {
