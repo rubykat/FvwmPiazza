@@ -91,6 +91,8 @@ sub init {
 
     $self->{all_windows} = {};
     $self->{current_group} = undef;
+    my $maximize_val = $self->{configTracker}->data('UseMaximize');
+    $self->{maximize} = ($maximize_val =~ /(1|true|on)/i);
     $self->{desks} = {};
     $self->{Layouts} = {};
     foreach my $lay ($self->layouts())
@@ -297,7 +299,9 @@ sub observe_window_addition {
        $self->debug("Not Interested in window $wid");
        return 0;
     }
-    my $new_window = FvwmPiazza::GroupWindow->new(ID=>$wid);
+    my $new_window = FvwmPiazza::GroupWindow->new(
+        ID=>$wid,
+        MAXIMIZE=>$self->{maximize});
     $self->{all_windows}->{$wid} = $new_window;
     $self->manage_window(window=>$wid);
 } # observe_window_addition
@@ -623,8 +627,11 @@ sub apply_tiling {
     #
     if (($layout eq 'None'))
     {
-	$self
-	->postponeSend("All (CurrentPage, Maximizable) Maximize False");
+        if ($self->{maximize})
+        {
+            $self
+                ->postponeSend("All (CurrentPage, Maximizable) Maximize False");
+        }
 
 	delete $self->{desks}->{$desk}->{$pagex}->{$pagey};
 	$self->init_new_page(desk_n=>$desk,
@@ -819,6 +826,7 @@ sub init_new_page {
 		      DESK=>$pwin->{desk},
 		      PAGEX=>$pwin->{page_nx},
 		      PAGEY=>$pwin->{page_ny},
+                      MAXIMIZE=>$self->{maximize},
 		     );
 	    $self->{all_windows}->{$wid} = $new_window;
 	    push @windows, $new_window;
