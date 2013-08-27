@@ -78,10 +78,6 @@ sub apply_layout {
     my $num_rows = $args{max_win};
     my $num_win = $area->num_windows();
 
-    if ($num_win == 0)
-    {
-	return $self->error("there are zero windows");
-    }
     if ($num_win < $num_rows)
     {
 	$area->redistribute_windows(n_groups=>$num_win);
