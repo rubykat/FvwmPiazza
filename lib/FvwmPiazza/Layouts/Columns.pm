@@ -24,6 +24,7 @@ use FvwmPiazza::Tiler;
 use FvwmPiazza::Page;
 use FvwmPiazza::Group;
 use FvwmPiazza::GroupWindow;
+use Getopt::Long;
 
 use base qw( FvwmPiazza::Layouts );
 
@@ -99,8 +100,20 @@ sub apply_layout {
     my @ratios = ();
     if ($num_cols == $args{max_win} and defined $options[0])
     {
-	@ratios = $self->calculate_ratios(num_sets=>$num_cols,
-	    ratios=>$options[0]);
+        my $ratio_arg;
+        my $parser = new Getopt::Long::Parser();
+        if ($options[0] =~ /^\d[\d:]*$/)
+        {
+            $ratio_arg = $options[0];
+        }
+        elsif (!$parser->getoptionsfromarray(\@options,
+                                           "ratios=s" => \$ratio_arg))
+        {
+            $args{tiler}->debug("Columns: failed to parse options: " . join(':', @options));
+            $ratio_arg = $num_cols;
+        }
+        @ratios = $self->calculate_ratios(num_sets=>$num_cols,
+	    ratios=>$ratio_arg);
     }
     else
     {

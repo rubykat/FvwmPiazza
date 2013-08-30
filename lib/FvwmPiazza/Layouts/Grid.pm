@@ -68,11 +68,52 @@ sub apply_layout {
         return $self->error($err);
     }
     my $area = $args{area};
-    my @options = @{$args{options}};
 
-    my $num_cols = (@options ? shift @options : 2);
-    my $width_ratio = (@options ? shift @options : '');
-    my $height_ratio = (@options ? shift @options : '');
+    # parse the options, if any
+    my @options = @{$args{options}};
+    my $num_cols;
+    my @rat_args = ();
+    my $width_ratio;
+    my $height_ratio;
+
+    # new-style
+    my $parser = new Getopt::Long::Parser();
+    if (!$parser->getoptionsfromarray(\@options,
+                                      "cols=n" => \$num_cols,
+                                      'ratios=s@' => \@rat_args,
+                                      "width_ratio=s" => \$width_ratio,
+                                      "height_ratio=s" => \$height_ratio))
+    {
+        $args{tiler}->debug("Grid failed to parse options: " . join(':', @options));
+    }
+    if (@rat_args)
+    {
+        # width first, then height
+        if (@rat_args = 1)
+        {
+            my @rat = split(',', $args{ratios});
+            $width_ratio = $rat[0];
+            $height_ratio = $rat[1];
+        }
+        else # more than one, take first two
+        {
+            $width_ratio = $rat_args[0];
+            $height_ratio = $rat_args[1];
+        }
+    }
+    # old-style
+    if (!defined $num_cols)
+    {
+        $num_cols = (@options ? shift @options : 2);
+    }
+    if (!defined $width_ratio)
+    {
+        $width_ratio = (@options ? shift @options : '');
+    }
+    if (!defined $height_ratio)
+    {
+        $height_ratio = (@options ? shift @options : '');
+    }
 
     my $working_width = $args{vp_width} -
 	($args{left_offset} + $args{right_offset});

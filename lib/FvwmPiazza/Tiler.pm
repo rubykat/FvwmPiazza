@@ -32,6 +32,7 @@ use lib `fvwm-perllib dir`;
 
 use FVWM::Module;
 use General::Parse;
+use Getopt::Long;
 use YAML::Syck;
 use FvwmPiazza::Page;
 use FvwmPiazza::Group;
@@ -433,8 +434,13 @@ sub handle_command {
     my $self = shift;
     my $event = shift;
 
-    my ($action, $args) = get_token($event->_text);
+    my $msg = $event->_text;
+    $msg =~ s/^\s+//;
+    return unless $msg;
+
+    my ($action, $args) = split(/\s+/, $msg, 2);
     return unless $action;
+
     if ($action =~ /dump/i)
     {
 	$self->debug("===============================\n"
@@ -572,17 +578,29 @@ sub apply_tiling {
     my $page_info = $self->{desks}->{$desk}->{$pagex}->{$pagey};
 
     my $layout = $args{layout};
+    $self->debug("LAYOUT=$layout ARGS=$args{args}");
     my @options = ();
     if ($args{args})
     {
-	@options = split(',', $args{args});
+	@options = split(/[,\s+]/, $args{args});
     }
 
+    # find the max_win option, ignoring the others
     my $max_win = 1;
+    my $parser = new Getopt::Long::Parser(
+        config => [qw(pass_through)]
+        );
+    # old-style parsing
     if (defined $options[0] and $options[0] =~ /(\d+)/)
     {
-	$max_win = $1;
-	shift @options;
+        $max_win = $1;
+        shift @options;
+    }
+    # new-style parsing
+    elsif (!$parser->getoptionsfromarray(\@options,
+                                         "max_win=i" => \$max_win))
+    {
+        $self->debug("getopt parsing failed");
     }
 
     if ($layout =~ /Inc/)

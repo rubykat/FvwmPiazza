@@ -52,7 +52,6 @@ sub apply_layout {
     my $self = shift;
     my %args = (
 		area=>undef,
-		options=>[],
 		left_offset=>0,
 		right_offset=>0,
 		top_offset=>0,
@@ -69,7 +68,6 @@ sub apply_layout {
         return $self->error($err);
     }
     my $area = $args{area};
-    my @options = @{$args{options}};
 
     my $working_width = $args{vp_width} -
 	($args{left_offset} + $args{right_offset});

@@ -69,22 +69,59 @@ sub apply_layout {
         return $self->error($err);
     }
     my $area = $args{area};
-    my @options = @{$args{options}};
 
-    my $working_width = $args{vp_width} -
-	($args{left_offset} + $args{right_offset});
-    my $working_height = $args{vp_height} -
-	($args{top_offset} + $args{bottom_offset});
+    # parse the options, if any
+    my @options = @{$args{options}};
+    my $tall_style;
+    my @rat_args = ();
+    my $width_ratio;
+    my $height_ratio;
+
+    # new-style
+    my $parser = new Getopt::Long::Parser();
+    if (!$parser->getoptionsfromarray(\@options,
+                                      'variant=s' => \$tall_style,
+                                      'ratios=s@' => \@rat_args,
+                                      "width_ratio=s" => \$width_ratio,
+                                      "height_ratio=s" => \$height_ratio))
+    {
+        $args{tiler}->debug("Failed to parse options: " . join(':', @options));
+    }
+    if (@rat_args)
+    {
+        # width first, then height
+        if (@rat_args = 1)
+        {
+            my @rat = split(',', $args{ratios});
+            $width_ratio = $rat[0];
+            $height_ratio = $rat[1];
+        }
+        else # more than one, take first two
+        {
+            $width_ratio = $rat_args[0];
+            $height_ratio = $rat_args[1];
+        }
+    }
+    # old-style
+    if (!defined $tall_style)
+    {
+        $tall_style = (@options ? shift @options : '');
+    }
+    if (!defined $width_ratio)
+    {
+        $width_ratio = (@options ? shift @options : '');
+    }
+    if (!defined $height_ratio)
+    {
+        $height_ratio = (@options ? shift @options : '');
+    }
 
     my $num_win = $area->num_windows();
     my $max_win = $args{max_win};
 
     my $num_cols = 2;
     $num_cols = 1 if $num_win == 1;
-    my $tall_style = (@options ? shift @options : '');
     my $tall_col_nr = ($tall_style =~ /Right/i ? 1 : 0);
-    my $width_ratio = (@options ? shift @options : '');
-    my $height_ratio = (@options ? shift @options : '');
 
     # adjust the max-win if we have few windows
     if ($num_win < $max_win)
@@ -98,6 +135,11 @@ sub apply_layout {
     }
     my $num_rows = $max_win - 1;
     $num_rows = 1 if $num_rows <= 0;
+
+    my $working_width = $args{vp_width} -
+	($args{left_offset} + $args{right_offset});
+    my $working_height = $args{vp_height} -
+	($args{top_offset} + $args{bottom_offset});
 
     # Calculate the width and height ratios
     my @width_ratios =
@@ -119,7 +161,7 @@ sub apply_layout {
 	{
 	    $group->arrange_group(module=>$args{tiler},
 				  x=>$xpos,
-				  y=>$args{top_offset},
+				  y=>$ypos,
 				  width=>$col_width,
 				  height=>$working_height);
 	    $args{tiler}

@@ -69,7 +69,52 @@ sub apply_layout {
         return $self->error($err);
     }
     my $area = $args{area};
+
+    # parse the options, if any
     my @options = @{$args{options}};
+    my $wide_style;
+    my @rat_args = ();
+    my $width_ratio;
+    my $height_ratio;
+
+    # new-style
+    my $parser = new Getopt::Long::Parser();
+    if (!$parser->getoptionsfromarray(\@options,
+                                      'variant=s' => \$wide_style,
+                                      'ratios=s@' => \@rat_args,
+                                      "width_ratio=s" => \$width_ratio,
+                                      "height_ratio=s" => \$height_ratio))
+    {
+        $args{tiler}->debug("Failed to parse options: " . join(':', @options));
+    }
+    if (@rat_args)
+    {
+        # width first, then height
+        if (@rat_args = 1)
+        {
+            my @rat = split(',', $args{ratios});
+            $width_ratio = $rat[0];
+            $height_ratio = $rat[1];
+        }
+        else # more than one, take first two
+        {
+            $width_ratio = $rat_args[0];
+            $height_ratio = $rat_args[1];
+        }
+    }
+    # old-style
+    if (!defined $wide_style)
+    {
+        $wide_style = (@options ? shift @options : '');
+    }
+    if (!defined $width_ratio)
+    {
+        $width_ratio = (@options ? shift @options : '');
+    }
+    if (!defined $height_ratio)
+    {
+        $height_ratio = (@options ? shift @options : '');
+    }
 
     my $working_width = $args{vp_width} -
 	($args{left_offset} + $args{right_offset});
@@ -81,7 +126,7 @@ sub apply_layout {
 
     my $num_rows = 2;
     my $wide_row_nr = 0;
-    if (defined $options[0] and $options[0] =~ /Bottom/)
+    if ($wide_style =~ /Bottom/)
     {
 	$wide_row_nr = 1;
     }
@@ -96,16 +141,22 @@ sub apply_layout {
     }
     my $num_cols = $max_win - 1;
 
-    my $col_width = int($working_width/$num_cols);
-    my $row_height = int($working_height/$num_rows);
+    # Calculate the width and height ratios
+    my @width_ratios =
+	$self->calculate_ratios(num_sets=>$num_cols, ratios=>$width_ratio);
+    my @height_ratios =
+	$self->calculate_ratios(num_sets=>$num_rows, ratios=>$height_ratio);
+
     my $col_nr = 0;
     my $row_nr = 0;
+    my $ypos = $args{top_offset};
+    my $xpos = $args{left_offset};
     for (my $gnr=0; $gnr < $max_win; $gnr++)
     {
+	my $col_width = int($working_width * $width_ratios[$col_nr]);
+	my $row_height = int($working_height * $height_ratios[$row_nr]);
 	my $group = $area->group($gnr);
 
-	my $xpos = $args{left_offset} + ($col_nr * $col_width);
-	my $ypos = $args{top_offset} + ($row_nr * $row_height);
 	if ($row_nr == $wide_row_nr)
 	{
 	    $group->arrange_group(module=>$args{tiler},
@@ -127,25 +178,31 @@ sub apply_layout {
 	    ->debug("col=$col_nr, row=$row_nr, xpos=$xpos, ypos=$ypos");
 	}
 
-
 	if ($row_nr == $wide_row_nr)
 	{
 	    $row_nr++;
 	    $col_nr = 0;
+	    $xpos = $args{left_offset};
+	    $ypos += $row_height;
 	}
 	else
 	{
 	    $col_nr++;
+	    $xpos += $col_width;
 	    if ($col_nr == $num_cols)
 	    {
 		$col_nr = 0;
+		$xpos = $args{left_offset};
 		$row_nr++;
+		$ypos += $row_height;
 	    }
 	}
 	if ($row_nr == $num_rows)
 	{
 	    $row_nr = 0;
 	    $col_nr = 0;
+	    $xpos = $args{left_offset};
+	    $ypos = $args{top_offset};
 	}
     }
 
