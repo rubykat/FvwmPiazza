@@ -31,18 +31,21 @@ This will set the layout for the current desktop to "Full" when Alt-Ctrl-f is hi
 
 =head3 Layout Types
 
+All layouts have a "max_win" argument, which is the maximum number of windows visible in that layout.
+For different types of layouts, this set of windows is arranged differently.
+
 =over
 
 =item Columns
 
-    Columns I<cols>
+    Columns --max_win I<cols>
 
 Windows are arranged in I<cols> columns.
 
-    Columns I<cols>,I<proportions>
+    Columns --max_win I<cols> --ratios I<ratios>
 
-If a I<proportions> argument is given, this defines the proportions of the columns.
-For example, "Columns 2,60:40" will give the first column 60% of the space, and the
+If a I<ratios> argument is given, this defines the ratios of the columns.
+For example, "Columns --cols 2 --ratios 60:40" will give the first column 60% of the space, and the
 second column 40% of the space.
 
 =item Full
@@ -51,46 +54,55 @@ All windows are fullscreen.
 
 =item Grid
 
-    Grid I<grids>,I<cols>
+    Grid --max_win I<grids> --cols I<cols>
 
 Windows are arranged in a grid of I<grids> squares, with I<cols> columns.
-Thus to get a 2x2 grid, the command is "Grid 4,2".
+Thus to get a 2x2 grid, the command is "Grid --max_win 4 --cols 2".
 
 =item Rows
 
-    Rows I<rows>
+    Rows --max_win I<rows>
 
 Windows are arranged in I<rows> rows.
 
-    Rows I<rows>,I<proportions>
+    Rows --max_win I<rows> --ratios I<ratios>
 
-If a I<proportions> argument is given, this defines the proportions of the rows.
-For example, "Rows 2,60:40" will give the first row 60% of the space, and the
+If a I<ratios> argument is given, this defines the ratios of the rows.
+For example, "Rows --max_win 2 --ratios 60:40" will give the first row 60% of the space, and the
 second row 40% of the space.
 
 =item Tall
 
-    Tall I<groups>
+    Tall --max_win I<groups>
 
 Windows are arranged such that the first window is in one column, and the rest of the windows
 are in (I<groups> - 1) rows in the second column.
 
-    Tall I<groups>,Right
+    Tall --max_win I<groups> --variation Right
 
-If a second argument "Right" is given ("Tall 3,Right" for example) then the arrangement is
-a mirror-image, with the single-window column being on the right instead of the left.
+If the argument "--variation Right" is given ("Tall --max_win 3 --variation
+Right" for example) then the arrangement is a mirror-image, with the
+single-window column being on the right instead of the left.
 
 =item Wide
 
-    Wide I<groups>
+    Wide --max_win I<groups>
 
 Windows are arranged such that the first window is in one row, and the rest of the windows
 are in (I<groups> - 1) columns in the second row.
 
-    Wide I<groups>,Bottom
+    Wide --max_win I<groups> --variation Bottom
 
-If a second argument "Bottom" is given ("Wide 3,Bottom" for example) then the arrangement is
-a mirror-image, with the single-window row being on the bottom instead of the top.
+If the argument "--variation Bottom" is given ("Wide --max_win 3 --variation
+Bottom" for example) then the arrangement is a mirror-image, with the
+single-window row being on the bottom instead of the top.
+
+=item Matrix
+
+    Matrix --max_win I<groups> --cols I<cols> --rows I<rows> --rows I<rows>
+
+The I<groups> number of windows are arranged in I<cols> number of columns, with each column having the corresponding I<rows> number of rows.
+For example "Matrix --max_win 4 --cols 3 --rows 1 --rows 2 --rows 1" would have three columns, with one window in the first column, two windows in the second column, and one window in the third column.
 
 =back
 
@@ -126,16 +138,6 @@ This tells FvwmPiazza to ignore windows that match the given regex.
 
     *FvwmPiazza: Exclude (Gweled|gnome-mastermind|PipeWalker|feh|pho)
 
-=head3 Struts
-
-This is needed if one has used a global EwmhBaseStruts command to restrict the "working" area.
-Unfortunately, FvwmPizza can't find out what those settings are, so you have to specifically
-tell the module what they are.
-
-    EwmhBaseStruts 0 70 24 0
-
-    *FvwmPiazza: Struts 0 70 24 0
-
 =head1 EXAMPLES
 
 =head2 Example Config
@@ -146,7 +148,6 @@ tell the module what they are.
     All (FvwmPiazza) Close
     DestroyModuleConfig FvwmPiazza: *
 
-    *FvwmPiazza: Struts 0 70 24 0
     *FvwmPiazza: Exclude (Gweled|gnome-mastermind|PipeWalker|feh|pho|Lurk)
     *FvwmPiazza: Layout0 Full
     *FvwmPiazza: Layout1 Tall 3
@@ -163,16 +164,16 @@ tell the module what they are.
     # Hotkeys
     Key n		A	3	SendToModule FvwmPiazza "None"
     Key f		A	3	SendToModule FvwmPiazza Full
-    Key t		A	3	SendToModule FvwmPiazza Tall 3
-    Key t		A	3S	SendToModule FvwmPiazza Tall 3,Right
-    Key c		A	3	SendToModule FvwmPiazza Columns 2
-    Key c		A	3S	SendToModule FvwmPiazza Columns 3,18:64:18
-    Key r		A	3	SendToModule FvwmPiazza Rows 2
-    Key r		A	3S	SendToModule FvwmPiazza Rows 2,66
-    Key w		A	3	SendToModule FvwmPiazza Wide 3
-    Key w		A	3S	SendToModule FvwmPiazza Wide 3,Bottom
-    Key g		A	3	SendToModule FvwmPiazza Grid 4,2
-    Key g		A	3S	SendToModule FvwmPiazza Grid 4,2,60,50
+    Key t		A	3	SendToModule FvwmPiazza Tall --max_win 3
+    Key t		A	3S	SendToModule FvwmPiazza Tall --max_win 3 --variation Right
+    Key c		A	3	SendToModule FvwmPiazza Columns --max_win 2
+    Key c		A	3S	SendToModule FvwmPiazza Columns --max_win 3 --ratios 18:64:18
+    Key r		A	3	SendToModule FvwmPiazza Rows --max_win 2
+    Key r		A	3S	SendToModule FvwmPiazza Rows --max_win 2 --ratios 66
+    Key w		A	3	SendToModule FvwmPiazza Wide --max_win 3
+    Key w		A	3S	SendToModule FvwmPiazza Wide --max_win 3 --variation Bottom
+    Key g		A	3	SendToModule FvwmPiazza Grid --max_win 4 --cols 2
+    Key g		A	3S	SendToModule FvwmPiazza Grid --max_win 4 --cols 2 --width_ratio 60 --height_ratio 50
 
     Key less	A 	3S	SendToModule FvwmPiazza Decrement 1
     Key greater	A 	3S	SendToModule FvwmPiazza Increment 1
@@ -207,8 +208,6 @@ tell the module what they are.
 
     Key c		A	3	Popup FPMultiColumnMenu
     Key r		A	3	Popup FPMultiRowMenu
-    Key w		A	3	Popup FPMultiWideMenu
-    Key t		A	3	Popup FPMultiTallMenu
     Key g		A	3	Popup FPMultiGridMenu
 
     Key Up		A 	3	SendToModule FvwmPiazza Increment 1
@@ -223,41 +222,30 @@ tell the module what they are.
     # Fake multi-keys by defining menus
     DestroyMenu FPMultiColumnMenu
     AddToMenu FPMultiColumnMenu
-    + "&2 Columns" SendToModule FvwmPiazza Columns 2
-    + "&3 Columns" SendToModule FvwmPiazza Columns 3
-    + "&4 Columns" SendToModule FvwmPiazza Columns 4
+    + "&2 Columns" SendToModule FvwmPiazza Columns --max_win 2
+    + "&3 Columns" SendToModule FvwmPiazza Columns --max_win 3
+    + "&4 Columns" SendToModule FvwmPiazza Columns --max_win 4
+    + "&Two-Thirds Columns" SendToModule FvwmPiazza Columns --max_win 2 --ratios 66
 
     DestroyMenu FPMultiRowMenu
     AddToMenu FPMultiRowMenu
-    + "&2 Rows" SendToModule FvwmPiazza Rows 2
-    + "&3 Rows" SendToModule FvwmPiazza Rows 3
-    + "&4 Rows" SendToModule FvwmPiazza Rows 4
-    + "&Two-Thirds Rows" SendToModule FvwmPiazza Rows 2,66
-
-    DestroyMenu FPMultiWideMenu
-    AddToMenu FPMultiWideMenu
-    + "&3 Wide" SendToModule FvwmPiazza Wide 3
-    + "&Bottom Wide 3" SendToModule FvwmPiazza Wide 3,Bottom
-    + "&4 Wide" SendToModule FvwmPiazza Wide 4
-    + "Bottom Wide 4" SendToModule FvwmPiazza Wide 4,Bottom
-    + "&5 Wide" SendToModule FvwmPiazza Wide 5
-
-    DestroyMenu FPMultiTallMenu
-    AddToMenu FPMultiTallMenu
-    + "&3 Tall" SendToModule FvwmPiazza Tall 3
-    + "&Right Tall 3" SendToModule FvwmPiazza Tall 3,Right
-    + "&4 Tall" SendToModule FvwmPiazza Tall 4
-    + "Right Tall 4" SendToModule FvwmPiazza Tall 4,Right
-    + "&5 Tall" SendToModule FvwmPiazza Tall 5
+    + "&2 Rows" SendToModule FvwmPiazza Rows --max_win 2
+    + "&3 Rows" SendToModule FvwmPiazza Rows --max_win 3
+    + "&4 Rows" SendToModule FvwmPiazza Rows --max_win 4
+    + "&Two-Thirds Rows" SendToModule FvwmPiazza Rows --max_win 2 66
+    + "&Wide" SendToModule FvwmPiazza Wide --max_win 3
+    + "&Bottom Wide" SendToModule FvwmPiazza Wide --max_win 3 Bottom
+    + "&a) Two-Thirds Wide" SendToModule FvwmPiazza Wide --max_win 3 --height_ratio 2:1
 
     DestroyMenu FPMultiGridMenu
     AddToMenu FPMultiGridMenu
-    + "&4 Grid" SendToModule FvwmPiazza Grid 4,2
-    + "&6 Grid" SendToModule FvwmPiazza Grid 6,3
-    + "&8 Grid" SendToModule FvwmPiazza Grid 8,4
-    + "&Gimp Layout" SendToModule FvwmPiazza Columns 3,14:72:14
-    + "&Two-Column Gimp Layout" SendToModule FvwmPiazza Columns 2,20
-    + "T&all Gimp Layout" SendToModule FvwmPiazza Tall 3,Right,20,50
+    + "&4 Grid" SendToModule FvwmPiazza Grid --max_win 4 --cols 2
+    + "&6 Grid" SendToModule FvwmPiazza Grid --max_win 6 --cols 3
+    + "Tall &Left (1-2)" SendToModule FvwmPiazza Tall --max_win 3
+    + "Tall &Right (2-1)" SendToModule FvwmPiazza Tall --max_win 3 Right
+    + "&a) Tall Left (1-3)" SendToModule FvwmPiazza Tall --max_win 4
+    + "&b) Tall Right (3-1)" SendToModule FvwmPiazza Tall --max_win 4 Right
+    + "&c) Matrix (1-2-1)" SendToModule FvwmPiazza Matrix --max_win 4 --rows 1 --rows 2 --rows 1 --cols 3
 
 =head1 REQUIRES
 
