@@ -613,7 +613,6 @@ sub apply_tiling {
         }
         @options = @ARGV;
     }
-    $self->debug("Tiler: max_win=$max_win\n");
 
     if ($layout =~ /Inc/)
     {
@@ -638,6 +637,7 @@ sub apply_tiling {
 	$max_win = $page_info->{MAX_WIN};
 	@options = @{$page_info->{OPTIONS}};
     }
+    $self->debug("Tiler: max_win=$max_win\n");
 
     $max_win = 2 if !$max_win;
     $max_win = 1 if $layout eq 'Full';
