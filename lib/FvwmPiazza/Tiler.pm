@@ -61,7 +61,7 @@ sub new {
 	Name => "FvwmPiazza",
 	Mask => M_STRING | M_FOCUS_CHANGE,
 	EnableAlias => 1,
-	Debug => 0,
+	Debug => 1,
 	);
     bless $self, $class;
 
@@ -582,7 +582,14 @@ sub apply_tiling {
     my @options = ();
     if ($args{args})
     {
-	@options = split(/[,\s+]/, $args{args});
+        if ($args{args} =~ /\s/)
+        {
+            @options = split(/\s+/, $args{args});
+        }
+        else # old-style
+        {
+            @options = split(/,/, $args{args});
+        }
     }
 
     # find the max_win option, ignoring the others

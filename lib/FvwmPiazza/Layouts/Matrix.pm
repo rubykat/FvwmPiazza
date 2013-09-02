@@ -74,15 +74,18 @@ sub apply_layout {
     my $height_ratio = '';
     my @row_arr = ();
 
-    my $parser = new Getopt::Long::Parser();
-    if (!$parser->getoptionsfromarray(\@options,
-                                      'cols=n' => \$num_cols,
-                                      'rows=s@' => \@row_arr,
-                                      'ratios=s@' => \@rat_args,
-                                      "width_ratio=s" => \$width_ratio,
-                                      "height_ratio=s" => \$height_ratio))
     {
-        $args{tiler}->debug("Failed to parse options: " . join(':', @options));
+        local @ARGV = @options;
+        my $parser = new Getopt::Long::Parser();
+        if (!$parser->getoptions('cols=n' => \$num_cols,
+                                 'rows=s@' => \@row_arr,
+                                 'ratios=s@' => \@rat_args,
+                                 "width_ratio=s" => \$width_ratio,
+                                 "height_ratio=s" => \$height_ratio))
+        {
+            $args{tiler}->debug("Failed to parse options: " . join(':', @ARGV));
+        }
+        @options = @ARGV;
     }
     if (@rat_args)
     {
@@ -103,7 +106,15 @@ sub apply_layout {
     my @row_set = ();
     if (@row_arr)
     {
-        push @row_set, @row_arr;
+        if (@row_arr == 1)
+        {
+            # comma-separated
+            push @row_set, split(/,/, $row_arr[0]);
+        }
+        else
+        {
+            push @row_set, @row_arr;
+        }
         # repeat the last one until full
         while ($num_cols > @row_set)
         {

@@ -77,15 +77,19 @@ sub apply_layout {
     my $width_ratio;
     my $height_ratio;
 
-    # new-style
-    my $parser = new Getopt::Long::Parser();
-    if (!$parser->getoptionsfromarray(\@options,
-                                      'variant=s' => \$tall_style,
-                                      'ratios=s@' => \@rat_args,
-                                      "width_ratio=s" => \$width_ratio,
-                                      "height_ratio=s" => \$height_ratio))
     {
-        $args{tiler}->debug("Failed to parse options: " . join(':', @options));
+        # new-style
+        local @ARGV = @options;
+        my $parser = new Getopt::Long::Parser();
+        if (!$parser->getoptions(
+                'variant=s' => \$tall_style,
+                'ratios=s@' => \@rat_args,
+                "width_ratio=s" => \$width_ratio,
+                "height_ratio=s" => \$height_ratio))
+        {
+            $args{tiler}->debug("Failed to parse options: " . join(':', @options));
+        }
+        @options = @ARGV;
     }
     if (@rat_args)
     {

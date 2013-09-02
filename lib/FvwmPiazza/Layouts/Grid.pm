@@ -77,14 +77,17 @@ sub apply_layout {
     my $height_ratio;
 
     # new-style
-    my $parser = new Getopt::Long::Parser();
-    if (!$parser->getoptionsfromarray(\@options,
-                                      "cols=n" => \$num_cols,
-                                      'ratios=s@' => \@rat_args,
-                                      "width_ratio=s" => \$width_ratio,
-                                      "height_ratio=s" => \$height_ratio))
     {
-        $args{tiler}->debug("Grid failed to parse options: " . join(':', @options));
+        local @ARGV = @options;
+        my $parser = new Getopt::Long::Parser();
+        if (!$parser->getoptions("cols=n" => \$num_cols,
+                                 'ratios=s@' => \@rat_args,
+                                 "width_ratio=s" => \$width_ratio,
+                                 "height_ratio=s" => \$height_ratio))
+        {
+            $args{tiler}->debug("Grid failed to parse options: " . join(':', @ARGV));
+        }
+        @options = @ARGV;
     }
     if (@rat_args)
     {
@@ -137,6 +140,7 @@ sub apply_layout {
     }
 
     my $num_rows = int($max_win / $num_cols);
+    $args{tiler}->debug("Grid max_win=$max_win, num_cols=$num_cols, num_rows=$num_rows\n");
 
     # Calculate the width and height ratios
     my @width_ratios =
@@ -169,7 +173,8 @@ sub apply_layout {
 	    $row_height = int($working_height * $height_ratios[$row_nr]);
 	}
 
-	my $group = $area->group($gnr);
+        $args{tiler}->debug("Grid xpos=$xpos, ypos=$ypos, col_width=$col_width, row_height=$row_height\n");
+        my $group = $area->group($gnr);
 	$group->arrange_group(module=>$args{tiler},
 	    x=>$xpos,
 	    y=>$ypos,

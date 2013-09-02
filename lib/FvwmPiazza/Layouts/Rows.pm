@@ -72,11 +72,14 @@ sub apply_layout {
     # parse the options, if any
     my @options = @{$args{options}};
     my $ratio_args;
-    my $parser = new Getopt::Long::Parser();
-    if (!$parser->getoptionsfromarray(\@options,
-                                      'ratios=s' => \$ratio_args))
     {
-        $args{tiler}->debug("Grid failed to parse options: " . join(':', @options));
+        local @ARGV = @options;
+        my $parser = new Getopt::Long::Parser();
+        if (!$parser->getoptions('ratios=s' => \$ratio_args))
+        {
+            $args{tiler}->debug("Grid failed to parse options: " . join(':', @options));
+        }
+        @options = @ARGV;
     }
     if (!defined $ratio_args)
     {
