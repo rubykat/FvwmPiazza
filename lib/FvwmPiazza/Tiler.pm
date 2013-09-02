@@ -61,7 +61,7 @@ sub new {
 	Name => "FvwmPiazza",
 	Mask => M_STRING | M_FOCUS_CHANGE,
 	EnableAlias => 1,
-	Debug => 1,
+	Debug => 0,
 	);
     bless $self, $class;
 
@@ -130,8 +130,8 @@ sub init {
 	    {
 		my $opt_str;
 		($action, $opt_str) = split(' ', $conf->{$key}, 2);
-		@options = split(',', $opt_str);
-		$max_win = shift @options;
+                @options = $self->parse_options($opt_str);
+                $max_win = shift @options;
 	    }
 	    $self->init_new_page(desk_n=>$desk_n,
 				 page_x=>$pagex_n,
@@ -158,8 +158,8 @@ sub init {
 	    {
 		my $opt_str;
 		($action, $opt_str) = split(' ', $conf->{$key}, 2);
-		@options = split(',', $opt_str);
-		$max_win = shift @options;
+                @options = $self->parse_options($opt_str);
+                $max_win = shift @options;
 	    }
 	    for (my $pagex=0; $pagex < $desk_pages_x; $pagex++)
 	    {
@@ -579,40 +579,8 @@ sub apply_tiling {
 
     my $layout = $args{layout};
     $self->debug("LAYOUT=$layout ARGS=$args{args}");
-    my @options = ();
-    if ($args{args})
-    {
-        if ($args{args} =~ /\s/)
-        {
-            @options = split(/\s+/, $args{args});
-        }
-        else # old-style
-        {
-            @options = split(/,/, $args{args});
-        }
-    }
-
-    # find the max_win option, ignoring the others
-    my $max_win = 1;
-
-    # old-style parsing
-    if (defined $options[0] and $options[0] =~ /^(\d+)$/)
-    {
-        $max_win = $1;
-        shift @options;
-    }
-    else # new-style
-    {
-        local @ARGV = @options;
-        my $parser = new Getopt::Long::Parser(
-            config => [qw(pass_through)]
-            );
-        if (!$parser->getoptions("max_win=i" => \$max_win))
-        {
-            $self->debug("getopt parsing failed");
-        }
-        @options = @ARGV;
-    }
+    my @options = $self->parse_options($args{args});
+    my $max_win = shift @options;
 
     if ($layout =~ /Inc/)
     {
@@ -972,6 +940,58 @@ sub check_interest {
 
     return $interest;
 } # check_interest
+
+=head2 parse_options
+
+Parse the option string, either old-style or new-style.
+Return max_win and the options array.
+
+max_win is the first thing in the array which is returned.
+
+=cut
+sub parse_options {
+    my $self = shift;
+    my $opt_str = shift;
+
+    my $max_win = 1;
+    my @options = ();
+    if ($opt_str)
+    {
+        if ($opt_str =~ /\s/)
+        {
+            @options = split(/\s+/, $opt_str);
+        }
+        else # old-style
+        {
+            @options = split(/,/, $opt_str);
+        }
+    }
+    else
+    {
+        # no options given
+        return ($max_win);
+    }
+
+    # old-style parsing
+    if (defined $options[0] and $options[0] =~ /^(\d+)$/)
+    {
+        $max_win = $1;
+        shift @options;
+    }
+    else # new-style
+    {
+        local @ARGV = @options;
+        my $parser = new Getopt::Long::Parser(
+            config => [qw(pass_through)]
+            );
+        if (!$parser->getoptions("max_win=i" => \$max_win))
+        {
+            $self->debug("getopt parsing failed");
+        }
+        @options = @ARGV;
+    }
+    return ($max_win, @options);
+} # parse_options
 
 =head2 dump_properties
 
