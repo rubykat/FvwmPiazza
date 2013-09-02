@@ -61,7 +61,7 @@ sub new {
 	Name => "FvwmPiazza",
 	Mask => M_STRING | M_FOCUS_CHANGE,
 	EnableAlias => 1,
-	Debug => 0,
+	Debug => 1,
 	);
     bless $self, $class;
 
@@ -596,7 +596,7 @@ sub apply_tiling {
     my $max_win = 1;
 
     # old-style parsing
-    if (defined $options[0] and $options[0] =~ /^(\d+)/)
+    if (defined $options[0] and $options[0] =~ /^(\d+)$/)
     {
         $max_win = $1;
         shift @options;
@@ -613,6 +613,7 @@ sub apply_tiling {
         }
         @options = @ARGV;
     }
+    $self->debug("Tiler: max_win=$max_win\n");
 
     if ($layout =~ /Inc/)
     {
