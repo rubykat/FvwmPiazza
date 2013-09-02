@@ -61,7 +61,7 @@ sub new {
 	Name => "FvwmPiazza",
 	Mask => M_STRING | M_FOCUS_CHANGE,
 	EnableAlias => 1,
-	Debug => 1,
+	Debug => 0,
 	);
     bless $self, $class;
 
@@ -594,20 +594,24 @@ sub apply_tiling {
 
     # find the max_win option, ignoring the others
     my $max_win = 1;
-    my $parser = new Getopt::Long::Parser(
-        config => [qw(pass_through)]
-        );
+
     # old-style parsing
-    if (defined $options[0] and $options[0] =~ /(\d+)/)
+    if (defined $options[0] and $options[0] =~ /^(\d+)/)
     {
         $max_win = $1;
         shift @options;
     }
-    # new-style parsing
-    elsif (!$parser->getoptionsfromarray(\@options,
-                                         "max_win=i" => \$max_win))
+    else # new-style
     {
-        $self->debug("getopt parsing failed");
+        local @ARGV = @options;
+        my $parser = new Getopt::Long::Parser(
+            config => [qw(pass_through)]
+            );
+        if (!$parser->getoptions("max_win=i" => \$max_win))
+        {
+            $self->debug("getopt parsing failed");
+        }
+        @options = @ARGV;
     }
 
     if ($layout =~ /Inc/)
